@@ -3,158 +3,65 @@
     "username": "sharmashiv24251",
     "scans": [
       {
-        "timestamp": "2026-02-28T16:32:13.943Z",
+        "timestamp": "2026-02-28T16:59:38.244Z",
         "analysis": {
           "is_product": true,
-          "product_name": "Turbo 25g Protein Milkshake (Chocolate)",
-          "brand": "Epigamia",
-          "health_score": 85,
-          "ingredients": {
-            "good": [
-              {
-                "name": "Skimmed Milk",
-                "reason": "An excellent source of high-quality protein and calcium, supporting muscle growth and bone health."
-              },
-              {
-                "name": "Milk Solids",
-                "reason": "Provides concentrated dairy protein, which is essential for muscle repair and recovery."
-              },
-              {
-                "name": "Cocoa Powder",
-                "reason": "Contains natural antioxidants called flavonoids that can support heart health and reduce inflammation."
-              }
-            ],
-            "okay": [
-              {
-                "name": "Water",
-                "reason": "A neutral base used for hydration and consistency."
-              },
-              {
-                "name": "Nature Identical Flavouring",
-                "reason": "Provides flavor without the high sugar content of natural syrups, though it is synthetically produced."
-              },
-              {
-                "name": "Edible Common Salt",
-                "reason": "Used in small amounts to enhance flavor; sodium intake should be monitored but is typically low in such drinks."
-              },
-              {
-                "name": "Acidity Regulators (INS 340, 452, 339)",
-                "reason": "Mineral salts used to maintain the drink's texture and stability; generally recognized as safe in moderate amounts."
-              }
-            ],
-            "bad": [
-              {
-                "name": "Sucralose (INS 955)",
-                "reason": "An artificial sweetener that allows for zero sugar, but some studies suggest it may negatively impact gut health or insulin response."
-              },
-              {
-                "name": "Carrageenan (INS 407)",
-                "reason": "A seaweed-derived thickener that has been linked to digestive inflammation and discomfort in sensitive individuals."
-              }
-            ]
-          },
-          "rejection_reason": null
-        },
-        "tokens": {
-          "prompt": 1522,
-          "candidates": 483,
-          "thoughts": 927,
-          "total": 2932,
-          "cost_usd": 0.004991
-        }
-      },
-      {
-        "timestamp": "2026-02-28T16:36:20.269Z",
-        "analysis": {
-          "is_product": true,
-          "product_name": "Turbo 25g Protein Milkshake (Chocolate)",
+          "product_name": "Turbo 25g Protein Milkshake Chocolate",
           "brand": "Epigamia",
           "health_score": 80,
           "ingredients": {
             "good": [
               {
-                "name": "Skimmed Milk",
-                "reason": "A high-quality source of complete protein and calcium with zero fat."
+                "name": "Skimmed Milk (79%)",
+                "reason": "Excellent source of high-quality protein and calcium with minimal fat; suitable for your eggetarian diet."
               },
               {
                 "name": "Milk Solids",
-                "reason": "Concentrated dairy proteins that help achieve the high 25g protein content for muscle recovery."
+                "reason": "Provides concentrated dairy protein to support muscle recovery and satiety."
               },
               {
-                "name": "Cocoa Powder",
-                "reason": "Provides natural flavor and contains polyphenols which have antioxidant properties."
+                "name": "Water",
+                "reason": "Essential for hydration and used as a base for the milkshake consistency."
               }
             ],
             "okay": [
               {
-                "name": "Water",
-                "reason": "Used as a base for the beverage's consistency."
+                "name": "Cocoa Powder",
+                "reason": "Provides natural chocolate flavor and antioxidants, but flagged due to your lead sensitivity as cocoa can contain trace amounts of heavy metals."
               },
               {
                 "name": "Nature Identical Flavouring Substances",
-                "reason": "Standard additives used to enhance the chocolate taste; generally recognized as safe."
+                "reason": "Chemically identical to natural flavors; generally safe but lacks the nutritional benefits of whole food extracts."
               },
               {
-                "name": "Sucralose (INS 955)",
-                "reason": "A zero-calorie artificial sweetener that enables the 'no added sugar' claim, though some consumers prefer to avoid synthetic sweeteners."
-              },
-              {
-                "name": "Acidity Regulators (INS 339, 340, 452)",
-                "reason": "Phosphate salts used to maintain stability and pH; safe in moderation but best limited in high-phosphate diets."
+                "name": "Acidity Regulators (INS 340, 452, 339)",
+                "reason": "Common food additives used to maintain pH and stability; safe in standard consumed quantities."
               },
               {
                 "name": "Edible Common Salt",
-                "reason": "Enhances flavor and provides a small amount of electrolytes."
+                "reason": "Used for flavor enhancement and provides essential electrolytes, though contributes to sodium intake."
               }
             ],
             "bad": [
               {
-                "name": "Carrageenan (INS 407)",
-                "reason": "A common stabilizer that is controversial due to potential links to digestive distress and gut inflammation in sensitive individuals."
+                "name": "INS 407 (Carrageenan)",
+                "reason": "A thickener derived from seaweed that has been linked to digestive inflammation and gut sensitivity in some individuals."
+              },
+              {
+                "name": "INS 955 (Sucralose)",
+                "reason": "An artificial sweetener used to achieve zero sugar; while calorie-free, some studies suggest it may affect gut microbiome health."
               }
             ]
-          }
-        },
-        "tokens": {
-          "prompt": 1648,
-          "candidates": 467,
-          "thoughts": 2814,
-          "total": 4929,
-          "search_requests": 1,
-          "cost_usd": 0.045667
-        }
-      },
-      {
-        "timestamp": "2026-02-28T16:39:13.433Z",
-        "analysis": {
-          "is_product": true,
-          "product_name": "Ashwagandha KSM-66",
-          "brand": "Nutrabox",
-          "health_score": 95,
-          "ingredients": {
-            "good": [
-              {
-                "name": "KSM-66 Ashwagandha Root Extract",
-                "reason": "A high-quality, clinically studied adaptogen that helps reduce stress, improve cognitive function, and enhance muscle endurance."
-              }
-            ],
-            "okay": [
-              {
-                "name": "HPMC Capsule Shell",
-                "reason": "A standard vegetarian capsule material (Hypromellose) that is generally recognized as safe and inert."
-              }
-            ],
-            "bad": []
           },
           "rejection_reason": null
         },
         "tokens": {
-          "prompt": 1726,
-          "candidates": 188,
-          "thoughts": 486,
-          "total": 2400,
+          "prompt": 1613,
+          "candidates": 494,
+          "thoughts": 1400,
+          "total": 3507,
           "search_requests": 1,
-          "cost_usd": 0.037885
+          "cost_usd": 0.041489
         }
       }
     ]

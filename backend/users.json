@@ -4,8 +4,28 @@
     "username": "sharmashiv24251",
     "first_name": "Shivansh",
     "last_name": "Sharma",
-    "joined_at": "2026-02-28T16:31:55.861Z",
-    "total_scans": 3,
-    "total_cost_usd": 0.088543
+    "joined_at": "2026-02-28T16:55:08.202Z",
+    "total_scans": 1,
+    "total_cost_usd": 0.041489,
+    "is_onboarded": true,
+    "onboarding_step": 6,
+    "onboarding_raw_answers": {
+      "q1": "eggetarian",
+      "q2": "soy",
+      "q3": "lead",
+      "q4": "shit",
+      "q5": "gymbro"
+    },
+    "dietary_preferences": [
+      "eggetarian"
+    ],
+    "food_allergies": [
+      "soy"
+    ],
+    "ingredient_sensitivities": [
+      "lead"
+    ],
+    "skin_allergies": [],
+    "health_conditions": []
   }
 }
