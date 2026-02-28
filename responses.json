@@ -426,6 +426,75 @@
           "search_requests": 0,
           "cost_usd": 0.00368
         }
+      },
+      {
+        "timestamp": "2026-02-28T22:39:15.394Z",
+        "product_id": "8f205f2c-11f8-4438-acd4-0816c28250f6",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "NONE",
+          "reason": "The product contains Glycine Soja (Soybean) Oil, which is a direct conflict with the user's documented soy allergy."
+        },
+        "tokens": {
+          "prompt": 1359,
+          "cached": 0,
+          "candidates": 74,
+          "thoughts": 1019,
+          "total": 2452,
+          "search_requests": 0,
+          "cost_usd": 0.003958
+        },
+        "token_breakdown": {
+          "extraction_total": 1763,
+          "deep_analysis_total": 0,
+          "compatibility_total": 689
+        }
+      },
+      {
+        "timestamp": "2026-02-28T22:40:40.562Z",
+        "product_id": "de42d933-7f66-4fb8-b0cb-6baacf452826",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "MEDIUM",
+          "reason": "The product contains Tocopheryl Acetate (Vitamin E), which is frequently derived from soybean oil and may pose a risk for individuals with a soy allergy."
+        },
+        "tokens": {
+          "prompt": 1409,
+          "cached": 0,
+          "candidates": 78,
+          "thoughts": 1161,
+          "total": 2648,
+          "search_requests": 0,
+          "cost_usd": 0.004422
+        },
+        "token_breakdown": {
+          "extraction_total": 1416,
+          "deep_analysis_total": 0,
+          "compatibility_total": 1232
+        }
+      },
+      {
+        "timestamp": "2026-02-28T22:41:50.989Z",
+        "product_id": "cf7a151b-fe44-4dcd-930a-b99c4f1ccf07",
+        "cache_hit": false,
+        "compatibility": {
+          "compatibility_level": "NONE",
+          "reason": "This product contains soy lecithin, which is strictly prohibited for your soy allergy. Additionally, while milk chocolate typically has lower heavy metal levels than dark chocolate, your lead sensitivity makes any cocoa-based product a secondary concern."
+        },
+        "tokens": {
+          "prompt": 2817,
+          "cached": 0,
+          "candidates": 637,
+          "thoughts": 1033,
+          "total": 5815,
+          "search_requests": 7,
+          "cost_usd": 0.251419
+        },
+        "token_breakdown": {
+          "extraction_total": 1885,
+          "deep_analysis_total": 3930,
+          "compatibility_total": 0
+        }
       }
     ]
   }

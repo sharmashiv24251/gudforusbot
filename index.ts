@@ -31,6 +31,7 @@ interface Analysis {
     okay: Ingredient[];
     bad: Ingredient[];
   };
+  compatibility: Compatibility;
 }
 
 type CompatibilityLevel = "VERY HIGH" | "HIGH" | "MEDIUM" | "LOW" | "NONE";
@@ -42,6 +43,7 @@ interface Compatibility {
 
 interface TokenUsage {
   prompt: number;
+  cached: number;
   candidates: number;
   thoughts: number;
   total: number;
@@ -76,6 +78,11 @@ interface ScanRecord {
   cache_hit: boolean;
   compatibility: Compatibility | null;
   tokens: TokenUsage;
+  token_breakdown: {
+    extraction_total: number;
+    deep_analysis_total: number;
+    compatibility_total: number;
+  };
 }
 
 interface UserScan {
@@ -237,6 +244,7 @@ async function fuzzyFindProduct(
 function combineTokens(a: TokenUsage, b: TokenUsage): TokenUsage {
   return {
     prompt:          a.prompt          + b.prompt,
+    cached:          a.cached          + b.cached,
     candidates:      a.candidates      + b.candidates,
     thoughts:        a.thoughts        + b.thoughts,
     total:           a.total           + b.total,
@@ -503,13 +511,14 @@ function parseModelJSON<T>(text: string): T {
 }
 
 const MODEL = "gemini-3-flash-preview";
-const PRICE = { input: 0.5, output: 3.0, search: 35.0 };
+const PRICE = { input: 0.5, cached: 0.05, output: 3.0, search: 35.0 };
 
-function calcCost(prompt: number, output: number, searches: number): number {
+function calcCost(prompt: number, cached: number, output: number, searches: number): number {
   return (
-    (prompt / 1_000_000) * PRICE.input +
-    (output / 1_000_000) * PRICE.output +
-    (searches / 1000) * PRICE.search
+    (prompt  / 1_000_000) * PRICE.input +
+    (cached  / 1_000_000) * PRICE.cached +
+    (output  / 1_000_000) * PRICE.output +
+    (searches / 1000)     * PRICE.search
   );
 }
 
@@ -562,8 +571,19 @@ const responseSchema = {
       },
       required: ["good", "okay", "bad"],
     },
+    compatibility: {
+      type: "object",
+      properties: {
+        compatibility_level: {
+          type: "string",
+          enum: ["VERY HIGH", "HIGH", "MEDIUM", "LOW", "NONE"],
+        },
+        reason: { type: "string" },
+      },
+      required: ["compatibility_level", "reason"],
+    },
   },
-  required: ["is_product", "product_name", "brand", "health_score", "ingredients"],
+  required: ["is_product", "product_name", "brand", "health_score", "ingredients", "compatibility"],
 };
 
 const compatibilitySchema = {
@@ -615,10 +635,11 @@ If not a packaged product, set is_product to false and explain in rejection_reas
   console.log(`[extractBasicProductInfo] Response length: ${text.length} chars`);
 
   const usage = (result as any).usageMetadata ?? {};
-  let promptT = usage.promptTokenCount ?? 0;
+  let cachedT     = usage.cachedContentTokenCount ?? 0;
+  let promptT     = (usage.promptTokenCount ?? 0) - cachedT;
   let candidatesT = usage.candidatesTokenCount ?? 0;
-  let thoughtsT = usage.thoughtsTokenCount ?? 0;
-  let total = usage.totalTokenCount ?? promptT + candidatesT + thoughtsT;
+  let thoughtsT   = usage.thoughtsTokenCount ?? 0;
+  let total       = usage.totalTokenCount ?? promptT + cachedT + candidatesT + thoughtsT;
 
   let extraction: ProductExtraction;
   try {
@@ -640,28 +661,38 @@ If not a packaged product, set is_product to false and explain in rejection_reas
     if (!retryText) throw new Error("Empty response from Gemini (extraction retry)");
     console.log(`[Retry] extractBasicProductInfo response length: ${retryText.length} chars`);
     const ru = (retryResult as any).usageMetadata ?? {};
-    promptT    += ru.promptTokenCount ?? 0;
+    const ruCached  = ru.cachedContentTokenCount ?? 0;
+    cachedT     += ruCached;
+    promptT     += (ru.promptTokenCount ?? 0) - ruCached;
     candidatesT += ru.candidatesTokenCount ?? 0;
-    thoughtsT  += ru.thoughtsTokenCount ?? 0;
-    total      += ru.totalTokenCount ?? 0;
+    thoughtsT   += ru.thoughtsTokenCount ?? 0;
+    total       += ru.totalTokenCount ?? 0;
     extraction = parseModelJSON<ProductExtraction>(retryText);
   }
 
   const tokens: TokenUsage = {
     prompt: promptT,
+    cached: cachedT,
     candidates: candidatesT,
     thoughts: thoughtsT,
     total,
     search_requests: 0,
-    cost_usd: Number(calcCost(promptT, candidatesT + thoughtsT, 0).toFixed(6)),
+    cost_usd: Number(calcCost(promptT, cachedT, candidatesT + thoughtsT, 0).toFixed(6)),
   };
 
   return { extraction, tokens };
 }
 
 async function analyzeProductDeep(
-  imageBase64: string
+  imageBase64: string,
+  profile: HealthProfile
 ): Promise<{ analysis: Analysis; tokens: TokenUsage }> {
+  const profileText = `Dietary preferences: ${profile.dietary_preferences.join(", ") || "none"}
+Food allergies: ${profile.food_allergies.join(", ") || "none"}
+Ingredient sensitivities: ${profile.ingredient_sensitivities.join(", ") || "none"}
+Skin sensitivities: ${profile.skin_allergies.join(", ") || "none"}
+Health conditions: ${profile.health_conditions.join(", ") || "none"}`;
+
   const contents = [
     {
       role: "user" as const,
@@ -670,7 +701,10 @@ async function analyzeProductDeep(
           text: `Analyze this image.
 1. Extract product_name and brand from the label.
 2. Give a health_score from 0–100 based on general ingredient quality.
-3. Categorize ALL visible ingredients as good / okay / bad with a brief reason.`,
+3. Categorize ALL visible ingredients as good / okay / bad with a brief reason.
+4. Evaluate how compatible the product ingredients are with this User Health Profile:
+${profileText}
+Return a compatibility_level (VERY HIGH, HIGH, MEDIUM, LOW, or NONE) and a concise reason referencing the user's specific profile. If the profile has no restrictions, return VERY HIGH.`,
         },
         { inlineData: { mimeType: "image/jpeg" as const, data: imageBase64 } },
       ],
@@ -695,13 +729,14 @@ async function analyzeProductDeep(
   console.log(`[analyzeProductDeep] Response length: ${text.length} chars`);
 
   const usage = (result as any).usageMetadata ?? {};
-  let promptT    = usage.promptTokenCount ?? 0;
+  let cachedT     = usage.cachedContentTokenCount ?? 0;
+  let promptT     = (usage.promptTokenCount ?? 0) - cachedT;
   let candidatesT = usage.candidatesTokenCount ?? 0;
-  let thoughtsT  = usage.thoughtsTokenCount ?? 0;
-  let total      = usage.totalTokenCount ?? promptT + candidatesT + thoughtsT;
+  let thoughtsT   = usage.thoughtsTokenCount ?? 0;
+  let total       = usage.totalTokenCount ?? promptT + cachedT + candidatesT + thoughtsT;
 
   const groundingMeta = (result as any).candidates?.[0]?.groundingMetadata;
-  let searches = (groundingMeta?.webSearchQueries?.length ?? 0) > 0 ? 1 : 0;
+  let searches = groundingMeta?.webSearchQueries?.length ?? 0;
   if (searches) console.log(`[Grounding]`, groundingMeta?.webSearchQueries);
 
   let analysis: Analysis;
@@ -725,22 +760,25 @@ async function analyzeProductDeep(
     if (!retryText) throw new Error("Empty response from Gemini (analyzeProductDeep retry)");
     console.log(`[Retry] analyzeProductDeep response length: ${retryText.length} chars`);
     const ru = (retryResult as any).usageMetadata ?? {};
-    promptT    += ru.promptTokenCount ?? 0;
+    const ruCached  = ru.cachedContentTokenCount ?? 0;
+    cachedT     += ruCached;
+    promptT     += (ru.promptTokenCount ?? 0) - ruCached;
     candidatesT += ru.candidatesTokenCount ?? 0;
-    thoughtsT  += ru.thoughtsTokenCount ?? 0;
-    total      += ru.totalTokenCount ?? 0;
+    thoughtsT   += ru.thoughtsTokenCount ?? 0;
+    total       += ru.totalTokenCount ?? 0;
     const rg = (retryResult as any).candidates?.[0]?.groundingMetadata;
-    if ((rg?.webSearchQueries?.length ?? 0) > 0) searches += 1;
+    searches += (rg?.webSearchQueries?.length ?? 0);
     analysis = parseModelJSON<Analysis>(retryText);
   }
 
   const tokens: TokenUsage = {
     prompt: promptT,
+    cached: cachedT,
     candidates: candidatesT,
     thoughts: thoughtsT,
     total,
     search_requests: searches,
-    cost_usd: Number(calcCost(promptT, candidatesT + thoughtsT, searches).toFixed(6)),
+    cost_usd: Number(calcCost(promptT, cachedT, candidatesT + thoughtsT, searches).toFixed(6)),
   };
 
   return { analysis, tokens };
@@ -800,10 +838,11 @@ Return a compatibility_level (VERY HIGH, HIGH, MEDIUM, LOW, or NONE) and a conci
   console.log(`[analyzeCompatibility] Response length: ${text.length} chars`);
 
   const usage = (result as any).usageMetadata ?? {};
-  let promptT    = usage.promptTokenCount ?? 0;
+  let cachedT     = usage.cachedContentTokenCount ?? 0;
+  let promptT     = (usage.promptTokenCount ?? 0) - cachedT;
   let candidatesT = usage.candidatesTokenCount ?? 0;
-  let thoughtsT  = usage.thoughtsTokenCount ?? 0;
-  let total      = usage.totalTokenCount ?? promptT + candidatesT + thoughtsT;
+  let thoughtsT   = usage.thoughtsTokenCount ?? 0;
+  let total       = usage.totalTokenCount ?? promptT + cachedT + candidatesT + thoughtsT;
 
   let compatibility: Compatibility;
   try {
@@ -825,20 +864,23 @@ Return a compatibility_level (VERY HIGH, HIGH, MEDIUM, LOW, or NONE) and a conci
     if (!retryText) throw new Error("Empty response from Gemini (compatibility retry)");
     console.log(`[Retry] analyzeCompatibility response length: ${retryText.length} chars`);
     const ru = (retryResult as any).usageMetadata ?? {};
-    promptT    += ru.promptTokenCount ?? 0;
+    const ruCached  = ru.cachedContentTokenCount ?? 0;
+    cachedT     += ruCached;
+    promptT     += (ru.promptTokenCount ?? 0) - ruCached;
     candidatesT += ru.candidatesTokenCount ?? 0;
-    thoughtsT  += ru.thoughtsTokenCount ?? 0;
-    total      += ru.totalTokenCount ?? 0;
+    thoughtsT   += ru.thoughtsTokenCount ?? 0;
+    total       += ru.totalTokenCount ?? 0;
     compatibility = parseModelJSON<Compatibility>(retryText);
   }
 
   const tokens: TokenUsage = {
     prompt: promptT,
+    cached: cachedT,
     candidates: candidatesT,
     thoughts: thoughtsT,
     total,
     search_requests: 0,
-    cost_usd: Number(calcCost(promptT, candidatesT + thoughtsT, 0).toFixed(6)),
+    cost_usd: Number(calcCost(promptT, cachedT, candidatesT + thoughtsT, 0).toFixed(6)),
   };
 
   return { compatibility, tokens };
@@ -1025,7 +1067,12 @@ bot.on(message("photo"), async (ctx) => {
     };
 
     // ── Step 1: Lightweight extraction (cheap, no search) ────────────────────
+    let stageExtractionTotal    = 0;
+    let stageDeepAnalysisTotal  = 0;
+    let stageCompatibilityTotal = 0;
+
     const { extraction, tokens: tokensE } = await extractBasicProductInfo(imageBase64);
+    stageExtractionTotal = tokensE.total;
 
     if (!extraction.is_product) {
       await deleteThinking();
@@ -1038,6 +1085,7 @@ bot.on(message("photo"), async (ctx) => {
     // ── Step 2: Fuzzy match against products DB ──────────────────────────────
     let product: Product | null = null;
     let totalTokens: TokenUsage = tokensE;
+    let savedCompatibility: Compatibility | null = null;
 
     const cached = await fuzzyFindProduct(extraction.brand, extraction.product_name);
 
@@ -1045,10 +1093,11 @@ bot.on(message("photo"), async (ctx) => {
       product = cached;
       console.log(`[Cache HIT] "${extraction.brand} / ${extraction.product_name}" → ${product.id}`);
     } else {
-      // ── Step 3: Deep analysis (cache miss) — expensive, uses web search ───
+      // ── Step 3: Deep analysis + compatibility (cache miss, single call) ────
       console.log(`[Cache MISS] "${extraction.brand} / ${extraction.product_name}" — running deep analysis`);
-      const { analysis, tokens: tokensD } = await analyzeProductDeep(imageBase64);
+      const { analysis, tokens: tokensD } = await analyzeProductDeep(imageBase64, profile);
       totalTokens = combineTokens(tokensE, tokensD);
+      stageDeepAnalysisTotal = tokensD.total;
 
       if (!analysis.is_product) {
         await deleteThinking();
@@ -1057,6 +1106,8 @@ bot.on(message("photo"), async (ctx) => {
         );
         return;
       }
+
+      savedCompatibility = analysis.compatibility;
 
       try {
         product = await createOrGetProductFromAnalysis(analysis);
@@ -1080,15 +1131,17 @@ bot.on(message("photo"), async (ctx) => {
     await ctx.reply(formatProduct(product, !!cached, user.scans_left), { parse_mode: "Markdown" });
 
     // ── Step 4: Personal compatibility ───────────────────────────────────────
-    // ALWAYS runs a fresh Gemini call — never cached, never reused.
-    // cache_hit above is product-level only and has no effect here.
-    let savedCompatibility: Compatibility | null = null;
+    // Cache miss: already resolved above from the combined deep-analysis call.
+    // Cache hit: run a dedicated compatibility call now.
     try {
-      const { compatibility, tokens: tokensC } = await analyzeCompatibility(product.ingredients, profile);
-      savedCompatibility = compatibility;
-      totalTokens = combineTokens(totalTokens, tokensC);
+      if (!savedCompatibility) {
+        const { compatibility, tokens: tokensC } = await analyzeCompatibility(product.ingredients, profile);
+        savedCompatibility = compatibility;
+        totalTokens = combineTokens(totalTokens, tokensC);
+        stageCompatibilityTotal = tokensC.total;
+      }
       // Message 2: compatibility rating
-      await ctx.reply(formatCompatibility(compatibility), { parse_mode: "Markdown" });
+      await ctx.reply(formatCompatibility(savedCompatibility), { parse_mode: "Markdown" });
     } catch (err) {
       console.error("Compatibility analysis failed:", err);
       await ctx.reply(
@@ -1102,6 +1155,11 @@ bot.on(message("photo"), async (ctx) => {
       cache_hit: !!cached,
       compatibility: savedCompatibility,
       tokens: totalTokens,
+      token_breakdown: {
+        extraction_total:    stageExtractionTotal,
+        deep_analysis_total: stageDeepAnalysisTotal,
+        compatibility_total: stageCompatibilityTotal,
+      },
     });
 
     const cacheLabel = cached ? "cache" : "deep";

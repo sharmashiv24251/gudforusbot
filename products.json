@@ -751,5 +751,279 @@
     },
     "created_at": "2026-02-28T19:03:39.328Z",
     "source": "gemini-analysis"
+  },
+  "de42d933-7f66-4fb8-b0cb-6baacf452826": {
+    "id": "de42d933-7f66-4fb8-b0cb-6baacf452826",
+    "product_name": "Bright Healthy Radiance Gentle Renewing Cleanser",
+    "brand": "Cetaphil",
+    "health_score": 92,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Aqua",
+          "reason": "Essential solvent that forms the base of the cleanser."
+        },
+        {
+          "name": "Decyl Glucoside",
+          "reason": "A very mild, plant-derived surfactant ideal for sensitive skin."
+        },
+        {
+          "name": "Glycerin",
+          "reason": "A powerful humectant that helps the skin retain moisture during cleansing."
+        },
+        {
+          "name": "Niacinamide",
+          "reason": "Vitamin B3 that brightens skin, improves texture, and strengthens the barrier."
+        },
+        {
+          "name": "Pancratium Maritimum Extract",
+          "reason": "Also known as Sea Daffodil, it helps reduce the appearance of dark spots."
+        },
+        {
+          "name": "Jojoba Esters",
+          "reason": "Provides gentle physical exfoliation and releases Vitamin E into the skin."
+        },
+        {
+          "name": "Xylitylglucoside, Anhydroxylitol, Xylitol",
+          "reason": "A patented hydrating complex (Aquaxyl) that boosts skin hydration."
+        },
+        {
+          "name": "Tocopheryl Acetate",
+          "reason": "A stable form of Vitamin E that provides antioxidant protection."
+        }
+      ],
+      "okay": [
+        {
+          "name": "Sodium Cocoamphoacetate",
+          "reason": "A mild cleansing agent that helps create a soft foam."
+        },
+        {
+          "name": "Coco-Betaine",
+          "reason": "A gentle co-surfactant that improves lather and skin conditioning."
+        },
+        {
+          "name": "Sodium Chloride",
+          "reason": "Common salt used to adjust the viscosity of the product."
+        },
+        {
+          "name": "Acrylates/C10-30 Alkyl Acrylate Crosspolymer",
+          "reason": "A synthetic polymer used as a thickener and emulsion stabilizer."
+        },
+        {
+          "name": "Phenoxyethanol",
+          "reason": "A common preservative used to keep the product free of bacteria."
+        },
+        {
+          "name": "Sodium Benzoate",
+          "reason": "A safe preservative used to maintain product shelf life."
+        },
+        {
+          "name": "CI 77491",
+          "reason": "A mineral-based iron oxide used to color the exfoliating beads."
+        }
+      ],
+      "bad": []
+    },
+    "created_at": "2026-02-28T22:17:26.562Z",
+    "source": "gemini-analysis"
+  },
+  "924cde19-139a-41a0-8032-fd62ba10c781": {
+    "id": "924cde19-139a-41a0-8032-fd62ba10c781",
+    "product_name": "PRO Oil Control Foam Wash",
+    "brand": "Cetaphil",
+    "health_score": 75,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Aqua",
+          "reason": "The essential base solvent for the formula."
+        },
+        {
+          "name": "Glycerin",
+          "reason": "A powerful humectant that helps the skin retain moisture and stay hydrated."
+        },
+        {
+          "name": "Dipotassium Glycyrrhizate",
+          "reason": "A salt derived from licorice root known for its potent anti-inflammatory and skin-soothing properties."
+        },
+        {
+          "name": "Zinc Gluconate",
+          "reason": "Helps regulate sebum production and has anti-inflammatory benefits for acne-prone skin."
+        }
+      ],
+      "okay": [
+        {
+          "name": "Zinc Coceth Sulfate",
+          "reason": "A relatively mild surfactant that cleanses without the harshness of traditional sulfates."
+        },
+        {
+          "name": "PEG-75",
+          "reason": "A synthetic humectant and solvent generally considered safe for topical use."
+        },
+        {
+          "name": "PEG-7 Glyceryl Cocoate",
+          "reason": "A mild cleansing agent and emollient that helps prevent skin dryness."
+        },
+        {
+          "name": "PEG-40 Hydrogenated Castor Oil",
+          "reason": "An emulsifier that helps blend oil and water components."
+        },
+        {
+          "name": "PEG-200 Hydrogenated Glyceryl Palmate",
+          "reason": "Functions as a thickener and mild surfactant."
+        },
+        {
+          "name": "Sodium Benzoate",
+          "reason": "A common preservative used to prevent the growth of fungi and bacteria."
+        },
+        {
+          "name": "Disodium EDTA",
+          "reason": "A chelating agent that improves product stability by binding with metal ions."
+        }
+      ],
+      "bad": [
+        {
+          "name": "Parfum (Fragrance)",
+          "reason": "A common skin irritant that can cause reactions, especially in those with sensitive skin."
+        },
+        {
+          "name": "Amyl Cinnamal",
+          "reason": "A known fragrance allergen that can cause contact dermatitis."
+        },
+        {
+          "name": "Benzyl Benzoate",
+          "reason": "A fragrance ingredient and solvent that is a recognized allergen."
+        },
+        {
+          "name": "Citronellol",
+          "reason": "A floral fragrance component that is a potential skin sensitizer."
+        },
+        {
+          "name": "Geraniol",
+          "reason": "A common fragrance allergen found in many essential oils."
+        },
+        {
+          "name": "Hydroxycitronellal",
+          "reason": "A synthetic fragrance with a high potential for causing skin allergies."
+        },
+        {
+          "name": "Linalool",
+          "reason": "A very common fragrance allergen that can oxidize and become more irritating over time."
+        }
+      ]
+    },
+    "created_at": "2026-02-28T22:27:48.247Z",
+    "source": "gemini-analysis"
+  },
+  "8f205f2c-11f8-4438-acd4-0816c28250f6": {
+    "id": "8f205f2c-11f8-4438-acd4-0816c28250f6",
+    "product_name": "Baby Moisturising Baby Oil",
+    "brand": "Cetaphil",
+    "health_score": 80,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Helianthus Annuus (Sunflower) Seed Oil",
+          "reason": "A high-quality emollient rich in Vitamin E and fatty acids that helps maintain the skin's natural barrier."
+        },
+        {
+          "name": "Prunus Amygdalus Dulcis (Sweet Almond) Oil",
+          "reason": "A gentle, nourishing oil that effectively softens and smooths delicate skin."
+        },
+        {
+          "name": "Simmondsia Chinensis (Jojoba) Seed Oil",
+          "reason": "Closely mimics human sebum, providing deep hydration without being greasy."
+        },
+        {
+          "name": "Calendula Officinalis Flower Extract",
+          "reason": "An organic botanical extract known for its powerful soothing and anti-inflammatory properties."
+        },
+        {
+          "name": "Tocopherol",
+          "reason": "Vitamin E serves as a natural antioxidant that protects the skin from oxidative stress."
+        }
+      ],
+      "okay": [],
+      "bad": [
+        {
+          "name": "Glycine Soja (Soybean) Oil",
+          "reason": "A common allergen that can cause reactions in individuals with soy sensitivities or allergies."
+        },
+        {
+          "name": "Parfum",
+          "reason": "Synthetic fragrance is a frequent cause of skin irritation and allergic contact dermatitis, especially in infants."
+        }
+      ]
+    },
+    "created_at": "2026-02-28T22:37:33.764Z",
+    "source": "gemini-analysis"
+  },
+  "cf7a151b-fe44-4dcd-930a-b99c4f1ccf07": {
+    "id": "cf7a151b-fe44-4dcd-930a-b99c4f1ccf07",
+    "product_name": "Snickers",
+    "brand": "Mars",
+    "health_score": 35,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Peanuts",
+          "reason": "Rich in plant-based protein and heart-healthy monounsaturated fats."
+        },
+        {
+          "name": "Cocoa Butter",
+          "reason": "A source of healthy fatty acids and antioxidants."
+        },
+        {
+          "name": "Cocoa Mass",
+          "reason": "Contains flavonoids which may support cardiovascular health."
+        }
+      ],
+      "okay": [
+        {
+          "name": "Skimmed Milk Powder",
+          "reason": "Provides some calcium and protein but is highly processed."
+        },
+        {
+          "name": "Lactose",
+          "reason": "A natural milk sugar, generally safe unless lactose intolerant."
+        },
+        {
+          "name": "Salt",
+          "reason": "Used for flavor; intake should be monitored but acceptable in small amounts."
+        },
+        {
+          "name": "Sunflower Oil",
+          "reason": "A common vegetable oil, better than some fats but high in omega-6."
+        },
+        {
+          "name": "Whey Permeate",
+          "reason": "A byproduct of dairy processing used as a filler; provides minimal nutrition."
+        },
+        {
+          "name": "Coconut Oil",
+          "reason": "Contains medium-chain triglycerides but is high in saturated fat."
+        }
+      ],
+      "bad": [
+        {
+          "name": "Sugar",
+          "reason": "Extremely high content (over 50% by weight), leading to blood sugar spikes."
+        },
+        {
+          "name": "Glucose Syrup",
+          "reason": "An added sweetener that contributes to empty calories and metabolic issues."
+        },
+        {
+          "name": "Palm Fat",
+          "reason": "High in saturated fats and often associated with negative environmental impact."
+        },
+        {
+          "name": "Soy Lecithin",
+          "reason": "An emulsifier that is a major allergen for individuals with soy allergies."
+        }
+      ]
+    },
+    "created_at": "2026-02-28T22:41:49.451Z",
+    "source": "gemini-analysis"
   }
 }
