@@ -1,4 +1,5 @@
 import { Telegraf } from "telegraf";
+import type { Update } from "telegraf/types";
 import { message } from "telegraf/filters";
 import { GoogleGenAI } from "@google/genai";
 import sharp from "sharp";
@@ -1101,10 +1102,40 @@ bot.on(message("photo"), async (ctx) => {
   }
 });
 
-// ─── Launch ───────────────────────────────────────────────────────────────────
+// ─── Webhook Server ───────────────────────────────────────────────────────────
 
-bot.launch();
-console.log("Bot is running...");
+const PORT = Number(process.env.PORT) || 3000;
+const WEBHOOK_URL = `${process.env.RENDER_EXTERNAL_URL}/telegram-webhook`;
 
-process.once("SIGINT", () => bot.stop("SIGINT"));
-process.once("SIGTERM", () => bot.stop("SIGTERM"));
+await bot.telegram.setWebhook(WEBHOOK_URL);
+console.log(`Webhook registered: ${WEBHOOK_URL}`);
+
+Bun.serve({
+  port: PORT,
+  async fetch(req) {
+    const url = new URL(req.url);
+
+    if (url.pathname === "/") {
+      return new Response("Bot is running", { status: 200 });
+    }
+
+    if (url.pathname === "/telegram-webhook" && req.method === "POST") {
+      const update = await req.json() as Update;
+      await bot.handleUpdate(update);
+      return new Response("OK", { status: 200 });
+    }
+
+    return new Response("Not found", { status: 404 });
+  },
+});
+
+console.log(`Bot is running on port ${PORT}...`);
+
+process.once("SIGINT", async () => {
+  await bot.telegram.deleteWebhook();
+  bot.stop("SIGINT");
+});
+process.once("SIGTERM", async () => {
+  await bot.telegram.deleteWebhook();
+  bot.stop("SIGTERM");
+});
