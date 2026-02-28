@@ -1,0 +1,381 @@
+{
+  "1466820565": {
+    "username": "sharmashiv24251",
+    "scans": [
+      {
+        "timestamp": "2026-02-28T18:09:12.664Z",
+        "product_id": "5d56d8b1-8951-4432-afd1-077b46c4da01",
+        "cache_hit": false,
+        "compatibility": {
+          "compatibility_level": "VERY HIGH",
+          "reason": "The ingredients are consistent with an eggetarian diet and do not contain soy or any other substances identified in the user's health profile."
+        },
+        "tokens": {
+          "prompt": 2973,
+          "candidates": 517,
+          "thoughts": 2582,
+          "total": 6072,
+          "search_requests": 1,
+          "cost_usd": 0.045783
+        }
+      },
+      {
+        "timestamp": "2026-02-28T18:09:53.439Z",
+        "product_id": "89e88442-412e-4c33-8540-e4ed8de6b312",
+        "cache_hit": false,
+        "compatibility": {
+          "compatibility_level": "NONE",
+          "reason": "The product contains Salmon Fish Oil and EPA/DHA derived from fish, which is incompatible with an eggetarian diet that excludes fish consumption."
+        },
+        "tokens": {
+          "prompt": 2886,
+          "candidates": 680,
+          "thoughts": 2818,
+          "total": 6384,
+          "search_requests": 1,
+          "cost_usd": 0.046937
+        }
+      },
+      {
+        "timestamp": "2026-02-28T18:10:54.091Z",
+        "product_id": "df6cfaa8-1c7e-4ecb-a066-e37c766b03d8",
+        "cache_hit": false,
+        "compatibility": {
+          "compatibility_level": "HIGH",
+          "reason": "The ingredients are soy-free and vegetarian-friendly, but the user's specific sensitivity to lead requires caution as root extracts like Ashwagandha can contain trace heavy metals."
+        },
+        "tokens": {
+          "prompt": 3349,
+          "candidates": 225,
+          "thoughts": 1558,
+          "total": 5132,
+          "search_requests": 1,
+          "cost_usd": 0.042024
+        }
+      },
+      {
+        "timestamp": "2026-02-28T18:12:39.968Z",
+        "product_id": "5d56d8b1-8951-4432-afd1-077b46c4da01",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "VERY HIGH",
+          "reason": "The product is fully compatible with an eggetarian diet and does not contain soy or any other ingredients identified in the user's allergy or sensitivity profile."
+        },
+        "tokens": {
+          "prompt": 1391,
+          "candidates": 144,
+          "thoughts": 1649,
+          "total": 3184,
+          "search_requests": 0,
+          "cost_usd": 0.006074
+        }
+      },
+      {
+        "timestamp": "2026-02-28T18:13:34.327Z",
+        "product_id": "89e88442-412e-4c33-8540-e4ed8de6b312",
+        "cache_hit": false,
+        "compatibility": {
+          "compatibility_level": "NONE",
+          "reason": "The product contains Salmon Fish Oil and Gelatin, which are animal-derived ingredients incompatible with an eggetarian diet."
+        },
+        "tokens": {
+          "prompt": 3038,
+          "candidates": 604,
+          "thoughts": 2959,
+          "total": 6601,
+          "search_requests": 1,
+          "cost_usd": 0.047208
+        }
+      },
+      {
+        "timestamp": "2026-02-28T18:14:52.587Z",
+        "product_id": "4ffeca96-92c2-40d6-bade-cc46e129e7af",
+        "cache_hit": false,
+        "compatibility": {
+          "compatibility_level": "HIGH",
+          "reason": "The ingredients are soy-free and align with an eggetarian diet. Since KSM-66 is a root extract, you should verify third-party heavy metal testing results for the specific brand to address your lead sensitivity."
+        },
+        "tokens": {
+          "prompt": 2853,
+          "candidates": 309,
+          "thoughts": 2374,
+          "total": 5536,
+          "search_requests": 1,
+          "cost_usd": 0.044476
+        }
+      },
+      {
+        "timestamp": "2026-02-28T18:15:39.151Z",
+        "product_id": "89e88442-412e-4c33-8540-e4ed8de6b312",
+        "cache_hit": false,
+        "compatibility": {
+          "compatibility_level": "NONE",
+          "reason": "The product contains Salmon Fish Oil and Gelatin, both of which are animal-derived ingredients that conflict with an eggetarian diet."
+        },
+        "tokens": {
+          "prompt": 2871,
+          "candidates": 681,
+          "thoughts": 2890,
+          "total": 6442,
+          "search_requests": 1,
+          "cost_usd": 0.047148
+        }
+      },
+      {
+        "timestamp": "2026-02-28T18:16:59.902Z",
+        "product_id": "5d56d8b1-8951-4432-afd1-077b46c4da01",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "MEDIUM",
+          "reason": "The product is compatible with an eggetarian diet and does not contain soy; however, cocoa powder is known to potentially contain trace amounts of lead, which is a specific sensitivity for the user."
+        },
+        "tokens": {
+          "prompt": 1427,
+          "candidates": 91,
+          "thoughts": 1984,
+          "total": 3502,
+          "search_requests": 0,
+          "cost_usd": 0.006938
+        }
+      },
+      {
+        "timestamp": "2026-02-28T18:23:30.477Z",
+        "product_id": "89e88442-412e-4c33-8540-e4ed8de6b312",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "NONE",
+          "reason": "The product contains Salmon Fish Oil and Gelatin, which are animal-derived ingredients incompatible with an eggetarian diet."
+        },
+        "tokens": {
+          "prompt": 1419,
+          "candidates": 112,
+          "thoughts": 1645,
+          "total": 3176,
+          "search_requests": 0,
+          "cost_usd": 0.005981
+        }
+      },
+      {
+        "timestamp": "2026-02-28T18:25:42.278Z",
+        "product_id": "df6cfaa8-1c7e-4ecb-a066-e37c766b03d8",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "HIGH",
+          "reason": "The ingredients are soy-free and compatible with an eggetarian diet, but the user should verify third-party lab results for lead content in this root extract due to their specific sensitivity."
+        },
+        "tokens": {
+          "prompt": 1322,
+          "candidates": 97,
+          "thoughts": 1455,
+          "total": 2874,
+          "search_requests": 0,
+          "cost_usd": 0.005317
+        }
+      },
+      {
+        "timestamp": "2026-02-28T18:27:37.962Z",
+        "product_id": "2f51d724-a9e4-4dd7-ade2-a0794e3faf38",
+        "cache_hit": false,
+        "compatibility": {
+          "compatibility_level": "LOW",
+          "reason": "The product contains cocoa solids, which are a known source of trace lead, directly conflicting with the user's sensitivity. Additionally, the emulsifiers and ambiguous flavors pose a risk of soy derivatives or cross-contamination, which is a declared allergy."
+        },
+        "tokens": {
+          "prompt": 2966,
+          "candidates": 542,
+          "thoughts": 2032,
+          "total": 5540,
+          "search_requests": 1,
+          "cost_usd": 0.044205
+        }
+      },
+      {
+        "timestamp": "2026-02-28T18:28:11.361Z",
+        "product_id": "2f51d724-a9e4-4dd7-ade2-a0794e3faf38",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "MEDIUM",
+          "reason": "Cocoa solids and cocoa butter can contain trace amounts of lead, which conflicts with your specific sensitivity. Additionally, while emulsifiers 442 and 476 are often used as soy-free alternatives, they should be verified for potential cross-contamination given your soy allergy."
+        },
+        "tokens": {
+          "prompt": 1408,
+          "candidates": 105,
+          "thoughts": 1431,
+          "total": 2944,
+          "search_requests": 0,
+          "cost_usd": 0.005312
+        }
+      },
+      {
+        "timestamp": "2026-02-28T18:39:50.762Z",
+        "product_id": "409f55df-bb59-4bec-82d2-fdfc41f5f3b7",
+        "cache_hit": false,
+        "compatibility": {
+          "compatibility_level": "HIGH",
+          "reason": "The ingredients are compatible with an eggetarian diet and contain no explicit soy or lead. While 'Natural Flavors' can occasionally be a hidden source of soy, the product generally aligns with the user's health profile."
+        },
+        "tokens": {
+          "prompt": 3461,
+          "candidates": 997,
+          "thoughts": 1387,
+          "total": 5845,
+          "search_requests": 1,
+          "cost_usd": 0.043883
+        }
+      },
+      {
+        "timestamp": "2026-02-28T18:51:52.592Z",
+        "product_id": "47aaa4c1-ef3c-406b-a2d2-0b4bd05c3ab5",
+        "cache_hit": false,
+        "compatibility": {
+          "compatibility_level": "VERY HIGH",
+          "reason": "The ingredients do not contain soy, animal-derived flesh, or lead, making them fully compatible with an eggetarian diet and the user's specific health profile."
+        },
+        "tokens": {
+          "prompt": 2927,
+          "candidates": 843,
+          "thoughts": 2215,
+          "total": 5985,
+          "search_requests": 1,
+          "cost_usd": 0.045638
+        }
+      },
+      {
+        "timestamp": "2026-02-28T18:52:09.116Z",
+        "product_id": "409f55df-bb59-4bec-82d2-fdfc41f5f3b7",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "HIGH",
+          "reason": "The product ingredients are consistent with an eggetarian diet and do not explicitly contain soy or lead. However, 'Natural Flavors' can occasionally be a source of hidden allergens, requiring slight caution for those with a soy allergy."
+        },
+        "tokens": {
+          "prompt": 1448,
+          "candidates": 83,
+          "thoughts": 1222,
+          "total": 2753,
+          "search_requests": 0,
+          "cost_usd": 0.00464
+        }
+      },
+      {
+        "timestamp": "2026-02-28T18:53:21.434Z",
+        "product_id": "b8cf80b6-75c3-462e-a262-8b4ad396af8e",
+        "cache_hit": false,
+        "compatibility": {
+          "compatibility_level": "HIGH",
+          "reason": "The ingredients are compatible with an eggetarian diet and do not explicitly list soy, though 'Natural Flavors' can occasionally contain soy-derived carriers which may affect those with severe allergies."
+        },
+        "tokens": {
+          "prompt": 2899,
+          "candidates": 999,
+          "thoughts": 2091,
+          "total": 5989,
+          "search_requests": 1,
+          "cost_usd": 0.045721
+        }
+      },
+      {
+        "timestamp": "2026-02-28T18:55:28.544Z",
+        "product_id": "be213ca2-d321-4abe-900e-9b41667d1e45",
+        "cache_hit": false,
+        "compatibility": {
+          "compatibility_level": "HIGH",
+          "reason": "The ingredients are compatible with an eggetarian diet and do not explicitly list soy. However, 'Natural & Artificial Flavors' can occasionally contain soy-derived carriers, which may pose a minor risk for those with soy allergies."
+        },
+        "tokens": {
+          "prompt": 3175,
+          "candidates": 876,
+          "thoughts": 1698,
+          "total": 5749,
+          "search_requests": 1,
+          "cost_usd": 0.04431
+        }
+      },
+      {
+        "timestamp": "2026-02-28T18:57:07.798Z",
+        "product_id": "62d23a88-aadb-4539-a22d-961fc08e1358",
+        "cache_hit": false,
+        "compatibility": {
+          "compatibility_level": "HIGH",
+          "reason": "The ingredients do not contain soy or animal-derived components, making the product compatible with your soy allergy and eggetarian diet."
+        },
+        "tokens": {
+          "prompt": 3558,
+          "candidates": 826,
+          "thoughts": 3033,
+          "total": 7417,
+          "search_requests": 1,
+          "cost_usd": 0.048357
+        }
+      },
+      {
+        "timestamp": "2026-02-28T18:57:20.043Z",
+        "product_id": "5d56d8b1-8951-4432-afd1-077b46c4da01",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "VERY HIGH",
+          "reason": "The product is dairy-based, which is compatible with an eggetarian diet, and it contains no soy ingredients or other substances identified in the user's allergy and sensitivity profile."
+        },
+        "tokens": {
+          "prompt": 1414,
+          "candidates": 87,
+          "thoughts": 996,
+          "total": 2497,
+          "search_requests": 0,
+          "cost_usd": 0.003955
+        }
+      },
+      {
+        "timestamp": "2026-02-28T19:03:44.630Z",
+        "product_id": "13f91f6b-26cb-4566-aaf1-d0d5bae6f3f8",
+        "cache_hit": false,
+        "compatibility": {
+          "compatibility_level": "MEDIUM",
+          "reason": "The product contains Alpha Tocopherol (Vitamin E), which is frequently derived from soybean oil and may trigger a reaction for someone with a soy allergy."
+        },
+        "tokens": {
+          "prompt": 3085,
+          "candidates": 617,
+          "thoughts": 1348,
+          "total": 5050,
+          "search_requests": 1,
+          "cost_usd": 0.042438
+        }
+      },
+      {
+        "timestamp": "2026-02-28T19:04:07.985Z",
+        "product_id": "13f91f6b-26cb-4566-aaf1-d0d5bae6f3f8",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "MEDIUM",
+          "reason": "Alpha Tocopherol (Vitamin E) is frequently derived from soy, which may trigger a reaction given the user's soy allergy."
+        },
+        "tokens": {
+          "prompt": 1359,
+          "candidates": 75,
+          "thoughts": 768,
+          "total": 2202,
+          "search_requests": 0,
+          "cost_usd": 0.003208
+        }
+      },
+      {
+        "timestamp": "2026-02-28T20:21:27.225Z",
+        "product_id": "13f91f6b-26cb-4566-aaf1-d0d5bae6f3f8",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "MEDIUM",
+          "reason": "The product contains Alpha Tocopherol (Vitamin E), which is frequently derived from soy and may pose a risk given the user's soy allergy."
+        },
+        "tokens": {
+          "prompt": 1359,
+          "candidates": 81,
+          "thoughts": 1139,
+          "total": 2579,
+          "search_requests": 0,
+          "cost_usd": 0.004339
+        }
+      }
+    ]
+  }
+}
