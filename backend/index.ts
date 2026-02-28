@@ -844,7 +844,7 @@ Return a compatibility_level (VERY HIGH, HIGH, MEDIUM, LOW, or NONE) and a conci
 
 // ─── Formatter ────────────────────────────────────────────────────────────────
 
-function formatProduct(product: Product): string {
+function formatProduct(product: Product, cacheHit: boolean): string {
   const { product_name, brand, health_score, ingredients } = product;
   const score = health_score ?? 0;
   const emoji = score >= 70 ? "🟢" : score >= 40 ? "🟡" : "🔴";
@@ -870,6 +870,7 @@ function formatProduct(product: Product): string {
     for (const i of ingredients.bad) msg += `• *${i.name}* — ${i.reason}\n`;
   }
 
+  msg += `\n\n_${cacheHit ? "⚡ Loaded from cache" : "🔬 Freshly analyzed"}_`;
   return msg.trim();
 }
 
@@ -1062,7 +1063,7 @@ bot.on(message("photo"), async (ctx) => {
     }
 
     // Message 1: ingredient breakdown
-    await ctx.reply(formatProduct(product), { parse_mode: "Markdown" });
+    await ctx.reply(formatProduct(product, !!cached), { parse_mode: "Markdown" });
 
     // ── Step 4: Personal compatibility ───────────────────────────────────────
     // ALWAYS runs a fresh Gemini call — never cached, never reused.
