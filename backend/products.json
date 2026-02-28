@@ -692,5 +692,64 @@
     },
     "created_at": "2026-02-28T18:56:59.813Z",
     "source": "gemini-analysis"
+  },
+  "13f91f6b-26cb-4566-aaf1-d0d5bae6f3f8": {
+    "id": "13f91f6b-26cb-4566-aaf1-d0d5bae6f3f8",
+    "product_name": "10% Vitamin C + Ferulic Acid + Vitamin E Serum",
+    "brand": "Timeless Skin Care",
+    "health_score": 92,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Water",
+          "reason": "Essential solvent and base for the serum."
+        },
+        {
+          "name": "L-Ascorbic Acid",
+          "reason": "Pure Vitamin C; a potent antioxidant that brightens skin and boosts collagen production."
+        },
+        {
+          "name": "Alpha Tocopherol",
+          "reason": "Vitamin E; an antioxidant that works synergistically with Vitamin C to protect against UV damage."
+        },
+        {
+          "name": "Panthenol",
+          "reason": "Pro-vitamin B5; known for its soothing, anti-inflammatory, and hydrating properties."
+        },
+        {
+          "name": "Ferulic Acid",
+          "reason": "Plant-based antioxidant that stabilizes Vitamin C and doubles its photoprotection."
+        },
+        {
+          "name": "Sodium Hyaluronate",
+          "reason": "A salt form of hyaluronic acid that deeply hydrates the skin by attracting moisture."
+        },
+        {
+          "name": "Dehydroacetic Acid",
+          "reason": "A safe, effective preservative often used in clean beauty formulations."
+        }
+      ],
+      "okay": [
+        {
+          "name": "Ethoxydiglycol",
+          "reason": "A solvent and penetration enhancer; generally safe but may cause slight irritation in very sensitive skin."
+        },
+        {
+          "name": "Propylene Glycol",
+          "reason": "A common humectant and solvent; safe for most but can be a sensitizer for a small percentage of users."
+        },
+        {
+          "name": "Polysorbate 80",
+          "reason": "An emulsifier used to blend oil and water; considered safe but sometimes avoided in strict 'clean' beauty standards."
+        },
+        {
+          "name": "Benzylalcohol",
+          "reason": "A preservative and solvent; while effective, it is a known potential allergen for sensitive skin types."
+        }
+      ],
+      "bad": []
+    },
+    "created_at": "2026-02-28T19:03:39.328Z",
+    "source": "gemini-analysis"
   }
 }

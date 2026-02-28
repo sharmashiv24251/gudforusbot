@@ -324,6 +324,40 @@
           "search_requests": 0,
           "cost_usd": 0.003955
         }
+      },
+      {
+        "timestamp": "2026-02-28T19:03:44.630Z",
+        "product_id": "13f91f6b-26cb-4566-aaf1-d0d5bae6f3f8",
+        "cache_hit": false,
+        "compatibility": {
+          "compatibility_level": "MEDIUM",
+          "reason": "The product contains Alpha Tocopherol (Vitamin E), which is frequently derived from soybean oil and may trigger a reaction for someone with a soy allergy."
+        },
+        "tokens": {
+          "prompt": 3085,
+          "candidates": 617,
+          "thoughts": 1348,
+          "total": 5050,
+          "search_requests": 1,
+          "cost_usd": 0.042438
+        }
+      },
+      {
+        "timestamp": "2026-02-28T19:04:07.985Z",
+        "product_id": "13f91f6b-26cb-4566-aaf1-d0d5bae6f3f8",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "MEDIUM",
+          "reason": "Alpha Tocopherol (Vitamin E) is frequently derived from soy, which may trigger a reaction given the user's soy allergy."
+        },
+        "tokens": {
+          "prompt": 1359,
+          "candidates": 75,
+          "thoughts": 768,
+          "total": 2202,
+          "search_requests": 0,
+          "cost_usd": 0.003208
+        }
       }
     ]
   }
