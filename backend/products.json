@@ -1,0 +1,220 @@
+{
+  "5d56d8b1-8951-4432-afd1-077b46c4da01": {
+    "id": "5d56d8b1-8951-4432-afd1-077b46c4da01",
+    "product_name": "TURBO 25g PROTEIN MILKSHAKE chocolate",
+    "brand": "epigamia",
+    "health_score": 78,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Skimmed Milk",
+          "reason": "High-quality source of dairy protein and essential calcium."
+        },
+        {
+          "name": "Milk Solids",
+          "reason": "Provides additional protein content to reach the 25g target."
+        },
+        {
+          "name": "Cocoa Powder",
+          "reason": "Natural flavoring that contains beneficial antioxidants."
+        }
+      ],
+      "okay": [
+        {
+          "name": "Water",
+          "reason": "Used as a base for consistency."
+        },
+        {
+          "name": "Nature Identical Flavouring Substances",
+          "reason": "Standard food-grade flavoring, though chemically synthesized to mimic natural flavor."
+        },
+        {
+          "name": "Acidity Regulators (INS 340, 452, 339)",
+          "reason": "Common phosphate-based additives used for stability; generally safe but indicate high processing."
+        },
+        {
+          "name": "Edible Common Salt",
+          "reason": "Used in small amounts to enhance flavor profile."
+        }
+      ],
+      "bad": [
+        {
+          "name": "Stabilizer (INS 407 / Carrageenan)",
+          "reason": "A thickener that has been linked to digestive distress and gut inflammation in some studies."
+        },
+        {
+          "name": "Sweetener (INS 955 / Sucralose)",
+          "reason": "An artificial sweetener that avoids sugar calories but may negatively impact gut microbiome health."
+        }
+      ]
+    },
+    "created_at": "2026-02-28T18:09:07.192Z",
+    "source": "gemini-analysis"
+  },
+  "89e88442-412e-4c33-8540-e4ed8de6b312": {
+    "id": "89e88442-412e-4c33-8540-e4ed8de6b312",
+    "product_name": "Salmon Omega 3",
+    "brand": "TATA 1mg",
+    "health_score": 85,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Salmon Fish Oil",
+          "reason": "A rich source of essential Omega-3 fatty acids that support heart and brain health."
+        },
+        {
+          "name": "EPA (Eicosapentaenoic acid)",
+          "reason": "Helps reduce inflammation and supports cardiovascular health."
+        },
+        {
+          "name": "DHA (Docosahexaenoic acid)",
+          "reason": "Crucial for brain function, eye health, and nervous system maintenance."
+        },
+        {
+          "name": "Vitamin E (DL-Alpha-Tocopheryl Acetate)",
+          "reason": "Acts as an antioxidant to prevent the fish oil from oxidizing and going rancid."
+        }
+      ],
+      "okay": [
+        {
+          "name": "Gelatin",
+          "reason": "Standard pharmaceutical-grade material for softgel capsules; however, it is animal-derived (non-vegetarian)."
+        },
+        {
+          "name": "Glycerol (INS 422)",
+          "reason": "A safe humectant used to keep the capsule shell flexible."
+        },
+        {
+          "name": "Sorbitol (INS 420 (ii))",
+          "reason": "A sugar alcohol used as a plasticizer in the capsule shell; safe in small amounts."
+        },
+        {
+          "name": "Purified Water",
+          "reason": "Standard solvent used in the manufacturing of the capsule shell."
+        },
+        {
+          "name": "Triethyl Citrate (INS 1505)",
+          "reason": "A food-grade stabilizer and plasticizer generally recognized as safe."
+        },
+        {
+          "name": "Ethyl Vanillin",
+          "reason": "An artificial flavoring agent used to mask the fishy smell; generally safe but synthetic."
+        },
+        {
+          "name": "Methacrylic Acid",
+          "reason": "Used in the coating of the capsule to ensure it dissolves in the right part of the digestive tract."
+        }
+      ],
+      "bad": [
+        {
+          "name": "Methylparaben (INS 218)",
+          "reason": "A preservative from the paraben family; while legally permitted, some consumers avoid it due to concerns regarding potential endocrine disruption."
+        }
+      ]
+    },
+    "created_at": "2026-02-28T18:09:48.561Z",
+    "source": "gemini-analysis"
+  },
+  "df6cfaa8-1c7e-4ecb-a066-e37c766b03d8": {
+    "id": "df6cfaa8-1c7e-4ecb-a066-e37c766b03d8",
+    "product_name": "ASHWAGANDHA KSM-66",
+    "brand": "NUTRABOX",
+    "health_score": 95,
+    "ingredients": {
+      "good": [
+        {
+          "name": "KSM-66 Ashwagandha",
+          "reason": "A high-quality, clinically studied full-spectrum root extract that helps reduce stress, improve cognition, and boost energy."
+        }
+      ],
+      "okay": [
+        {
+          "name": "HPMC Capsule Shell",
+          "reason": "A safe, plant-based capsule material (Hydroxypropyl Methylcellulose) suitable for vegetarians; it is inert and non-toxic."
+        }
+      ],
+      "bad": []
+    },
+    "created_at": "2026-02-28T18:10:48.368Z",
+    "source": "gemini-analysis"
+  },
+  "4ffeca96-92c2-40d6-bade-cc46e129e7af": {
+    "id": "4ffeca96-92c2-40d6-bade-cc46e129e7af",
+    "product_name": "Ashwa Gandha (KSM-66 Ashwagandha)",
+    "brand": "Nutrabox",
+    "health_score": 95,
+    "ingredients": {
+      "good": [
+        {
+          "name": "KSM-66 Ashwagandha Root Extract",
+          "reason": "A highly researched, full-spectrum adaptogen that helps reduce cortisol (stress), improves muscle recovery, and supports cognitive function."
+        }
+      ],
+      "okay": [
+        {
+          "name": "HPMC Capsule shell",
+          "reason": "A standard plant-based (vegan) capsule material that is inert and generally recognized as safe for consumption."
+        }
+      ],
+      "bad": []
+    },
+    "created_at": "2026-02-28T18:14:43.838Z",
+    "source": "gemini-analysis"
+  },
+  "2f51d724-a9e4-4dd7-ade2-a0794e3faf38": {
+    "id": "2f51d724-a9e4-4dd7-ade2-a0794e3faf38",
+    "product_name": "Dairy Milk Silk Fruit & Nut",
+    "brand": "Cadbury",
+    "health_score": 38,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Cocoa Solids",
+          "reason": "Contains flavonoids and antioxidants beneficial for heart health."
+        },
+        {
+          "name": "Cashew Nuts",
+          "reason": "Provides healthy fats, protein, and essential minerals."
+        },
+        {
+          "name": "Raisins",
+          "reason": "A source of fiber and natural energy, though high in natural sugar."
+        },
+        {
+          "name": "Apricot Kernels",
+          "reason": "Contains healthy monounsaturated fats and some fiber."
+        }
+      ],
+      "okay": [
+        {
+          "name": "Milk Solids",
+          "reason": "Provides calcium and protein but is a processed dairy component."
+        },
+        {
+          "name": "Cocoa Butter",
+          "reason": "A natural plant-based fat, though very high in calories."
+        },
+        {
+          "name": "Natural & Nature Identical Flavours",
+          "reason": "Used for taste; generally safe but less ideal than whole food flavorings."
+        }
+      ],
+      "bad": [
+        {
+          "name": "Sugar",
+          "reason": "The primary ingredient; high consumption is linked to obesity and metabolic issues."
+        },
+        {
+          "name": "Emulsifiers (442, 476)",
+          "reason": "Highly processed additives used to improve texture; some studies suggest potential gut health impacts."
+        },
+        {
+          "name": "Artificial Flavouring Substances (Ethyl Vanillin)",
+          "reason": "Synthetic chemicals used to mimic natural flavors."
+        }
+      ]
+    },
+    "created_at": "2026-02-28T18:27:26.585Z",
+    "source": "gemini-analysis"
+  }
+}

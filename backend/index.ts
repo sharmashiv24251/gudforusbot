@@ -2,6 +2,7 @@ import { Telegraf } from "telegraf";
 import { message } from "telegraf/filters";
 import { GoogleGenAI } from "@google/genai";
 import sharp from "sharp";
+import Fuse from "fuse.js";
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 if (!BOT_TOKEN) throw new Error("TELEGRAM_BOT_TOKEN is not set in .env");
@@ -48,9 +49,32 @@ interface TokenUsage {
   cost_usd: number;
 }
 
+interface Product {
+  id: string;
+  product_name: string | null;
+  brand: string | null;
+  health_score?: number | null;
+  ingredients?: {
+    good: Ingredient[];
+    okay: Ingredient[];
+    bad: Ingredient[];
+  } | null;
+  created_at: string;
+  source?: string;
+}
+
+interface ProductExtraction {
+  is_product: boolean;
+  rejection_reason: string | null;
+  product_name: string | null;
+  brand: string | null;
+}
+
 interface ScanRecord {
   timestamp: string;
-  analysis: Analysis;
+  product_id: string | null;
+  cache_hit: boolean;
+  compatibility: Compatibility | null;
   tokens: TokenUsage;
 }
 
@@ -95,7 +119,8 @@ type UsersDB = Record<string, UserData>;
 // ─── Storage ──────────────────────────────────────────────────────────────────
 
 const RESPONSES_PATH = new URL("./responses.json", import.meta.url).pathname;
-const USERS_PATH = new URL("./users.json", import.meta.url).pathname;
+const USERS_PATH     = new URL("./users.json",     import.meta.url).pathname;
+const PRODUCTS_PATH  = new URL("./products.json",  import.meta.url).pathname;
 
 async function loadJSON<T>(path: string, fallback: T): Promise<T> {
   try {
@@ -165,6 +190,98 @@ async function saveScan(
     );
     await saveJSON(USERS_PATH, db);
   }
+}
+
+// ─── Product Store ────────────────────────────────────────────────────────────
+
+const FILLER_WORDS = [
+  "soft drink", "beverage", "packaged", "product", "snack",
+  "food", "drink", "bar", "mix", "brand",
+];
+
+function normalizeProductKey(brand: string | null, name: string | null): string {
+  let raw = `${brand ?? ""} ${name ?? ""}`.toLowerCase().replace(/[^\w\s]/g, " ");
+  for (const word of FILLER_WORDS) {
+    raw = raw.replace(new RegExp(`\\b${word}\\b`, "gi"), " ");
+  }
+  return raw.replace(/\s+/g, " ").trim();
+}
+
+async function fuzzyFindProduct(
+  brand: string | null,
+  name: string | null
+): Promise<Product | null> {
+  const targetKey = normalizeProductKey(brand, name);
+  if (!targetKey) return null;
+
+  const db = await loadJSON<Record<string, Product>>(PRODUCTS_PATH, {});
+  const products = Object.values(db).filter(Boolean) as Product[];
+  if (products.length === 0) return null;
+
+  const entries = products.map((p) => ({
+    product: p,
+    key: normalizeProductKey(p.brand, p.product_name),
+  }));
+
+  const fuse = new Fuse(entries, { keys: ["key"], threshold: 0.15, includeScore: true });
+  const results = fuse.search(targetKey);
+  if (results.length === 0) return null;
+
+  const best = results[0]!;
+  console.log(`[Fuzzy] "${targetKey}" → "${best.item.key}" (score: ${best.score?.toFixed(3)})`);
+  return best.item.product;
+}
+
+function combineTokens(a: TokenUsage, b: TokenUsage): TokenUsage {
+  return {
+    prompt:          a.prompt          + b.prompt,
+    candidates:      a.candidates      + b.candidates,
+    thoughts:        a.thoughts        + b.thoughts,
+    total:           a.total           + b.total,
+    search_requests: a.search_requests + b.search_requests,
+    cost_usd: Number((a.cost_usd + b.cost_usd).toFixed(6)),
+  };
+}
+
+async function saveProduct(product: Product) {
+  const db = await loadJSON<Record<string, Product>>(PRODUCTS_PATH, {});
+  db[product.id] = product;
+  await saveJSON(PRODUCTS_PATH, db);
+}
+
+async function findProductByNameBrand(
+  product_name: string | null,
+  brand: string | null
+): Promise<Product | null> {
+  const db = await loadJSON<Record<string, Product>>(PRODUCTS_PATH, {});
+  if (!product_name && !brand) return null;
+  const norm = (s: string | null) => (s ?? "").trim().toLowerCase();
+  const targetName = norm(product_name);
+  const targetBrand = norm(brand);
+  for (const key of Object.keys(db)) {
+    const p = db[key];
+    if (!p) continue;
+    if (norm(p.product_name) === targetName && norm(p.brand) === targetBrand) return p;
+  }
+  return null;
+}
+
+async function createOrGetProductFromAnalysis(analysis: Analysis): Promise<Product | null> {
+  if (!analysis.is_product) return null;
+  const existing = await findProductByNameBrand(analysis.product_name, analysis.brand);
+  if (existing) return existing;
+  const id = crypto.randomUUID();
+  const product: Product = {
+    id,
+    product_name: analysis.product_name,
+    brand: analysis.brand,
+    health_score: analysis.health_score ?? null,
+    ingredients: analysis.ingredients ?? null,
+    created_at: new Date().toISOString(),
+    source: "gemini-analysis",
+  };
+  await saveProduct(product);
+  return product;
 }
 
 // ─── Onboarding ───────────────────────────────────────────────────────────────
@@ -284,8 +401,7 @@ async function advanceOnboarding(
   if (user.onboarding_step < 5) {
     user.onboarding_step += 1;
     await updateUser(user);
-    const next = QUESTIONS[user.onboarding_step - 1];
-    await ctx.reply(next.prompt, { parse_mode: "Markdown" });
+    await ctx.reply(QUESTIONS[user.onboarding_step - 1]!.prompt, { parse_mode: "Markdown" });
   } else {
     // Q5 answered — extract profile
     const processing = await ctx.reply("Analyzing your health profile... ⏳");
@@ -321,6 +437,16 @@ async function compressImage(buffer: Buffer): Promise<Buffer> {
 
 // ─── Gemini Product Analysis ──────────────────────────────────────────────────
 
+/** Extract only non-thought output parts so thinking-model reasoning doesn't corrupt JSON parsing. */
+function extractOutputText(result: any): string {
+  const parts: any[] = result?.candidates?.[0]?.content?.parts ?? [];
+  const outputText = parts
+    .filter((p) => !p.thought && typeof p.text === "string")
+    .map((p) => p.text as string)
+    .join("");
+  return outputText || result.text || "";
+}
+
 const MODEL = "gemini-3-flash-preview";
 const PRICE = { input: 0.5, output: 3.0, search: 35.0 };
 
@@ -331,6 +457,17 @@ function calcCost(prompt: number, output: number, searches: number): number {
     (searches / 1000) * PRICE.search
   );
 }
+
+const extractionSchema = {
+  type: "object",
+  properties: {
+    is_product:       { type: "boolean" },
+    rejection_reason: { type: ["string", "null"] },
+    product_name:     { type: ["string", "null"] },
+    brand:            { type: ["string", "null"] },
+  },
+  required: ["is_product", "rejection_reason", "product_name", "brand"],
+};
 
 const responseSchema = {
   type: "object",
@@ -386,7 +523,58 @@ const compatibilitySchema = {
   required: ["compatibility_level", "reason"],
 };
 
-async function analyzeProduct(
+async function extractBasicProductInfo(
+  imageBase64: string
+): Promise<{ extraction: ProductExtraction; tokens: TokenUsage }> {
+  const result = await ai.models.generateContent({
+    model: MODEL,
+    contents: [
+      {
+        role: "user",
+        parts: [
+          {
+            text: `Look at this image. Extract:
+1. Is this a packaged food or cosmetic/personal care product? (is_product)
+2. The exact product_name as printed on the label.
+3. The exact brand name.
+
+If not a packaged product, set is_product to false and explain in rejection_reason.`,
+          },
+          { inlineData: { mimeType: "image/jpeg", data: imageBase64 } },
+        ],
+      },
+    ],
+    config: {
+      temperature: 0.1,
+      maxOutputTokens: 256,
+      systemInstruction: `You are a product label reader. Extract only what is explicitly visible on the label. Do not infer or guess.`,
+      responseMimeType: "application/json",
+      responseSchema: extractionSchema,
+    },
+  });
+
+  const text = extractOutputText(result);
+  if (!text) throw new Error("Empty response from Gemini (extraction)");
+
+  const usage = (result as any).usageMetadata ?? {};
+  const promptT = usage.promptTokenCount ?? 0;
+  const candidatesT = usage.candidatesTokenCount ?? 0;
+  const thoughtsT = usage.thoughtsTokenCount ?? 0;
+  const total = usage.totalTokenCount ?? promptT + candidatesT + thoughtsT;
+
+  const tokens: TokenUsage = {
+    prompt: promptT,
+    candidates: candidatesT,
+    thoughts: thoughtsT,
+    total,
+    search_requests: 0,
+    cost_usd: Number(calcCost(promptT, candidatesT + thoughtsT, 0).toFixed(6)),
+  };
+
+  return { extraction: JSON.parse(text.trim()), tokens };
+}
+
+async function analyzeProductDeep(
   imageBase64: string
 ): Promise<{ analysis: Analysis; tokens: TokenUsage }> {
   const result = await ai.models.generateContent({
@@ -415,10 +603,7 @@ async function analyzeProduct(
     },
   });
 
-  const text =
-    result.text ||
-    (result as any).candidates?.[0]?.content?.parts?.[0]?.text ||
-    "";
+  const text = extractOutputText(result);
   if (!text) throw new Error("Empty response from Gemini");
 
   const usage = (result as any).usageMetadata ?? {};
@@ -444,13 +629,13 @@ async function analyzeProduct(
 }
 
 async function analyzeCompatibility(
-  ingredients: Analysis["ingredients"],
+  ingredients: Product["ingredients"],
   profile: HealthProfile
 ): Promise<{ compatibility: Compatibility; tokens: TokenUsage }> {
   const allIngredients = [
-    ...ingredients.good,
-    ...ingredients.okay,
-    ...ingredients.bad,
+    ...(ingredients?.good ?? []),
+    ...(ingredients?.okay ?? []),
+    ...(ingredients?.bad ?? []),
   ]
     .map((i) => `- ${i.name}`)
     .join("\n");
@@ -483,17 +668,14 @@ Return a compatibility_level (VERY HIGH, HIGH, MEDIUM, LOW, or NONE) and a conci
     ],
     config: {
       temperature: 0.3,
-      maxOutputTokens: 1024,
+      maxOutputTokens: 2048,
       systemInstruction: `You are a personal health compatibility analyst. Accurately evaluate product ingredients against the user's allergies, sensitivities, diet, and health conditions.`,
       responseMimeType: "application/json",
       responseSchema: compatibilitySchema,
     },
   });
 
-  const text =
-    result.text ||
-    (result as any).candidates?.[0]?.content?.parts?.[0]?.text ||
-    "";
+  const text = extractOutputText(result);
   if (!text) throw new Error("Empty response from Gemini (compatibility)");
 
   const usage = (result as any).usageMetadata ?? {};
@@ -516,27 +698,28 @@ Return a compatibility_level (VERY HIGH, HIGH, MEDIUM, LOW, or NONE) and a conci
 
 // ─── Formatter ────────────────────────────────────────────────────────────────
 
-function formatAnalysis(analysis: Analysis): string {
-  const { product_name, brand, health_score, ingredients } = analysis;
-  const emoji = health_score >= 70 ? "🟢" : health_score >= 40 ? "🟡" : "🔴";
+function formatProduct(product: Product): string {
+  const { product_name, brand, health_score, ingredients } = product;
+  const score = health_score ?? 0;
+  const emoji = score >= 70 ? "🟢" : score >= 40 ? "🟡" : "🔴";
 
   let msg = "";
   if (product_name) msg += `*${product_name}*`;
   if (brand) msg += ` by _${brand}_`;
   if (msg) msg += "\n\n";
-  msg += `${emoji} *Health Score: ${health_score}/100*\n\n`;
+  msg += `${emoji} *Health Score: ${score}/100*\n\n`;
 
-  if (ingredients.good.length > 0) {
+  if (ingredients?.good && ingredients.good.length > 0) {
     msg += `✅ *Good Ingredients*\n`;
     for (const i of ingredients.good) msg += `• *${i.name}* — ${i.reason}\n`;
     msg += "\n";
   }
-  if (ingredients.okay.length > 0) {
+  if (ingredients?.okay && ingredients.okay.length > 0) {
     msg += `⚪ *Okay Ingredients*\n`;
     for (const i of ingredients.okay) msg += `• *${i.name}* — ${i.reason}\n`;
     msg += "\n";
   }
-  if (ingredients.bad.length > 0) {
+  if (ingredients?.bad && ingredients.bad.length > 0) {
     msg += `❌ *Bad Ingredients*\n`;
     for (const i of ingredients.bad) msg += `• *${i.name}* — ${i.reason}\n`;
   }
@@ -581,7 +764,7 @@ bot.command("resetprofile", async (ctx) => {
   await updateUser(user);
 
   await ctx.reply(
-    "Profile reset! Let's start fresh.\n\n" + QUESTIONS[0].prompt,
+    "Profile reset! Let's start fresh.\n\n" + QUESTIONS[0]!.prompt,
     { parse_mode: "Markdown" }
   );
 });
@@ -600,7 +783,7 @@ bot.on(message("text"), async (ctx) => {
       `👋 Welcome, ${ctx.from.first_name}!\n\nBefore scanning products, I need to build your *personal health profile* so I can flag ingredients that affect _you specifically_.\n\nJust *5 quick questions* — let's go!`,
       { parse_mode: "Markdown" }
     );
-    await ctx.reply(QUESTIONS[0].prompt, { parse_mode: "Markdown" });
+    await ctx.reply(QUESTIONS[0]!.prompt, { parse_mode: "Markdown" });
     return;
   }
 
@@ -613,7 +796,7 @@ bot.on(message("text"), async (ctx) => {
     if (user.onboarding_step === 0) {
       user.onboarding_step = 1;
       await updateUser(user);
-      await ctx.reply(QUESTIONS[0].prompt, { parse_mode: "Markdown" });
+      await ctx.reply(QUESTIONS[0]!.prompt, { parse_mode: "Markdown" });
       return;
     }
     await advanceOnboarding(ctx, user, ctx.message.text.trim());
@@ -639,7 +822,7 @@ bot.on(message("photo"), async (ctx) => {
       `👋 Welcome, ${ctx.from.first_name}!\n\nBefore scanning products, I need to build your *personal health profile* — just *5 quick questions*!`,
       { parse_mode: "Markdown" }
     );
-    await ctx.reply(QUESTIONS[0].prompt, { parse_mode: "Markdown" });
+    await ctx.reply(QUESTIONS[0]!.prompt, { parse_mode: "Markdown" });
     return;
   }
 
@@ -672,6 +855,7 @@ bot.on(message("photo"), async (ctx) => {
     const original = Buffer.from(await res.arrayBuffer());
 
     const compressed = await compressImage(original);
+    const imageBase64 = compressed.toString("base64");
     const { width, height } = await sharp(compressed).metadata();
     console.log(`[Image] ${width}x${height}, ${compressed.length}B`);
 
@@ -683,33 +867,66 @@ bot.on(message("photo"), async (ctx) => {
       health_conditions:        user.health_conditions,
     };
 
-    // ── AI Call 1: Generic product analysis ──────────────────────────────────
-    const { analysis, tokens: tokens1 } = await analyzeProduct(compressed.toString("base64"));
-    await deleteThinking();
+    // ── Step 1: Lightweight extraction (cheap, no search) ────────────────────
+    const { extraction, tokens: tokensE } = await extractBasicProductInfo(imageBase64);
 
-    if (!analysis.is_product) {
+    if (!extraction.is_product) {
+      await deleteThinking();
       await ctx.reply(
-        `That doesn't look like a packaged product. ${analysis.rejection_reason || "Please send a photo of a food or cosmetic product."}`
+        `That doesn't look like a packaged product. ${extraction.rejection_reason || "Please send a photo of a food or cosmetic product."}`
       );
       return;
     }
 
-    // Message 1: ingredient breakdown
-    await ctx.reply(formatAnalysis(analysis), { parse_mode: "Markdown" });
+    // ── Step 2: Fuzzy match against products DB ──────────────────────────────
+    let product: Product | null = null;
+    let totalTokens: TokenUsage = tokensE;
 
-    // ── AI Call 2: Personal compatibility ────────────────────────────────────
-    let finalTokens = tokens1;
+    const cached = await fuzzyFindProduct(extraction.brand, extraction.product_name);
+
+    if (cached) {
+      product = cached;
+      console.log(`[Cache HIT] "${extraction.brand} / ${extraction.product_name}" → ${product.id}`);
+    } else {
+      // ── Step 3: Deep analysis (cache miss) — expensive, uses web search ───
+      console.log(`[Cache MISS] "${extraction.brand} / ${extraction.product_name}" — running deep analysis`);
+      const { analysis, tokens: tokensD } = await analyzeProductDeep(imageBase64);
+      totalTokens = combineTokens(tokensE, tokensD);
+
+      if (!analysis.is_product) {
+        await deleteThinking();
+        await ctx.reply(
+          `That doesn't look like a packaged product. ${analysis.rejection_reason || "Please send a photo of a food or cosmetic product."}`
+        );
+        return;
+      }
+
+      try {
+        product = await createOrGetProductFromAnalysis(analysis);
+      } catch (err) {
+        console.error("Product save failed:", err);
+      }
+    }
+
+    await deleteThinking();
+
+    if (!product) {
+      await ctx.reply("Sorry, I couldn't process this product. Please try again.");
+      return;
+    }
+
+    // Message 1: ingredient breakdown
+    await ctx.reply(formatProduct(product), { parse_mode: "Markdown" });
+
+    // ── Step 4: Personal compatibility ───────────────────────────────────────
+    // ALWAYS runs a fresh Gemini call — never cached, never reused.
+    // cache_hit above is product-level only and has no effect here.
+    let savedCompatibility: Compatibility | null = null;
     try {
-      const { compatibility, tokens: tokens2 } = await analyzeCompatibility(analysis.ingredients, profile);
-      finalTokens = {
-        prompt:          tokens1.prompt          + tokens2.prompt,
-        candidates:      tokens1.candidates      + tokens2.candidates,
-        thoughts:        tokens1.thoughts        + tokens2.thoughts,
-        total:           tokens1.total           + tokens2.total,
-        search_requests: tokens1.search_requests + tokens2.search_requests,
-        cost_usd: Number((tokens1.cost_usd + tokens2.cost_usd).toFixed(6)),
-      };
-      // Message 2: personal compatibility
+      const { compatibility, tokens: tokensC } = await analyzeCompatibility(product.ingredients, profile);
+      savedCompatibility = compatibility;
+      totalTokens = combineTokens(totalTokens, tokensC);
+      // Message 2: compatibility rating
       await ctx.reply(formatCompatibility(compatibility), { parse_mode: "Markdown" });
     } catch (err) {
       console.error("Compatibility analysis failed:", err);
@@ -720,12 +937,15 @@ bot.on(message("photo"), async (ctx) => {
 
     await saveScan(ctx.from, {
       timestamp: new Date().toISOString(),
-      analysis,
-      tokens: finalTokens,
+      product_id: product.id,
+      cache_hit: !!cached,
+      compatibility: savedCompatibility,
+      tokens: totalTokens,
     });
 
+    const cacheLabel = cached ? "cache" : "deep";
     console.log(
-      `[Scan] @${ctx.from.username ?? id} — ${analysis.product_name ?? "?"} by ${analysis.brand ?? "?"} — tokens: ${finalTokens.total}, search: ${finalTokens.search_requests ? "yes" : "no"}, cost: $${finalTokens.cost_usd}`
+      `[Scan/${cacheLabel}] @${ctx.from.username ?? id} — ${product.product_name ?? "?"} by ${product.brand ?? "?"} — tokens: ${totalTokens.total}, search: ${totalTokens.search_requests ? "yes" : "no"}, cost: $${totalTokens.cost_usd}`
     );
   } catch (error) {
     console.error("Analysis error:", error);
