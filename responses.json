@@ -358,6 +358,40 @@
           "search_requests": 0,
           "cost_usd": 0.003208
         }
+      },
+      {
+        "timestamp": "2026-02-28T19:59:36.334Z",
+        "product_id": "13f91f6b-26cb-4566-aaf1-d0d5bae6f3f8",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "MEDIUM",
+          "reason": "Alpha Tocopherol and Polysorbate 80 are frequently derived from soy, which may pose a risk given the user's soy allergy."
+        },
+        "tokens": {
+          "prompt": 1359,
+          "candidates": 79,
+          "thoughts": 755,
+          "total": 2193,
+          "search_requests": 0,
+          "cost_usd": 0.003181
+        }
+      },
+      {
+        "timestamp": "2026-02-28T19:59:39.043Z",
+        "product_id": "13f91f6b-26cb-4566-aaf1-d0d5bae6f3f8",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "MEDIUM",
+          "reason": "The product contains Alpha Tocopherol (Vitamin E), which is frequently derived from soy and may pose a risk due to the user's soy allergy."
+        },
+        "tokens": {
+          "prompt": 1359,
+          "candidates": 82,
+          "thoughts": 1139,
+          "total": 2580,
+          "search_requests": 0,
+          "cost_usd": 0.004342
+        }
       }
     ]
   }
