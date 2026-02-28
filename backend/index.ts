@@ -32,6 +32,13 @@ interface Analysis {
   };
 }
 
+type CompatibilityLevel = "VERY HIGH" | "HIGH" | "MEDIUM" | "LOW" | "NONE";
+
+interface Compatibility {
+  compatibility_level: CompatibilityLevel;
+  reason: string;
+}
+
 interface TokenUsage {
   prompt: number;
   candidates: number;
@@ -367,21 +374,21 @@ const responseSchema = {
   required: ["is_product", "product_name", "brand", "health_score", "ingredients"],
 };
 
-async function analyzeProductImage(
-  imageBase64: string,
-  profile: HealthProfile
+const compatibilitySchema = {
+  type: "object",
+  properties: {
+    compatibility_level: {
+      type: "string",
+      enum: ["VERY HIGH", "HIGH", "MEDIUM", "LOW", "NONE"],
+    },
+    reason: { type: "string" },
+  },
+  required: ["compatibility_level", "reason"],
+};
+
+async function analyzeProduct(
+  imageBase64: string
 ): Promise<{ analysis: Analysis; tokens: TokenUsage }> {
-  const hasProfile = Object.values(profile).some((arr) => arr.length > 0);
-
-  const profileSection = hasProfile
-    ? `\nUser health profile — flag conflicts clearly in ingredient reasons:
-• Diet: ${profile.dietary_preferences.join(", ") || "none"}
-• Food allergies: ${profile.food_allergies.join(", ") || "none"}
-• Ingredient sensitivities: ${profile.ingredient_sensitivities.join(", ") || "none"}
-• Skin sensitivities: ${profile.skin_allergies.join(", ") || "none"}
-• Health conditions: ${profile.health_conditions.join(", ") || "none"}\n`
-    : "";
-
   const result = await ai.models.generateContent({
     model: MODEL,
     contents: [
@@ -391,9 +398,8 @@ async function analyzeProductImage(
           {
             text: `Analyze this image.
 1. Extract product_name and brand from the label.
-2. Give a health_score from 0–100.
-3. Categorize ALL visible ingredients as good / okay / bad with a brief reason.
-${profileSection}`,
+2. Give a health_score from 0–100 based on general ingredient quality.
+3. Categorize ALL visible ingredients as good / okay / bad with a brief reason.`,
           },
           { inlineData: { mimeType: "image/jpeg", data: imageBase64 } },
         ],
@@ -437,6 +443,77 @@ ${profileSection}`,
   return { analysis: JSON.parse(text.trim()), tokens };
 }
 
+async function analyzeCompatibility(
+  ingredients: Analysis["ingredients"],
+  profile: HealthProfile
+): Promise<{ compatibility: Compatibility; tokens: TokenUsage }> {
+  const allIngredients = [
+    ...ingredients.good,
+    ...ingredients.okay,
+    ...ingredients.bad,
+  ]
+    .map((i) => `- ${i.name}`)
+    .join("\n");
+
+  const profileText = `Dietary preferences: ${profile.dietary_preferences.join(", ") || "none"}
+Food allergies: ${profile.food_allergies.join(", ") || "none"}
+Ingredient sensitivities: ${profile.ingredient_sensitivities.join(", ") || "none"}
+Skin sensitivities: ${profile.skin_allergies.join(", ") || "none"}
+Health conditions: ${profile.health_conditions.join(", ") || "none"}`;
+
+  const result = await ai.models.generateContent({
+    model: MODEL,
+    contents: [
+      {
+        role: "user",
+        parts: [
+          {
+            text: `Evaluate how compatible the following product ingredients are with the user's personal health profile.
+
+Ingredients:
+${allIngredients}
+
+User Health Profile:
+${profileText}
+
+Return a compatibility_level (VERY HIGH, HIGH, MEDIUM, LOW, or NONE) and a concise reason referencing the user's specific profile. If the profile has no restrictions, return VERY HIGH.`,
+          },
+        ],
+      },
+    ],
+    config: {
+      temperature: 0.3,
+      maxOutputTokens: 1024,
+      systemInstruction: `You are a personal health compatibility analyst. Accurately evaluate product ingredients against the user's allergies, sensitivities, diet, and health conditions.`,
+      responseMimeType: "application/json",
+      responseSchema: compatibilitySchema,
+    },
+  });
+
+  const text =
+    result.text ||
+    (result as any).candidates?.[0]?.content?.parts?.[0]?.text ||
+    "";
+  if (!text) throw new Error("Empty response from Gemini (compatibility)");
+
+  const usage = (result as any).usageMetadata ?? {};
+  const promptT = usage.promptTokenCount ?? 0;
+  const candidatesT = usage.candidatesTokenCount ?? 0;
+  const thoughtsT = usage.thoughtsTokenCount ?? 0;
+  const total = usage.totalTokenCount ?? promptT + candidatesT + thoughtsT;
+
+  const tokens: TokenUsage = {
+    prompt: promptT,
+    candidates: candidatesT,
+    thoughts: thoughtsT,
+    total,
+    search_requests: 0,
+    cost_usd: Number(calcCost(promptT, candidatesT + thoughtsT, 0).toFixed(6)),
+  };
+
+  return { compatibility: JSON.parse(text.trim()), tokens };
+}
+
 // ─── Formatter ────────────────────────────────────────────────────────────────
 
 function formatAnalysis(analysis: Analysis): string {
@@ -465,6 +542,17 @@ function formatAnalysis(analysis: Analysis): string {
   }
 
   return msg.trim();
+}
+
+function formatCompatibility(compatibility: Compatibility): string {
+  const { compatibility_level, reason } = compatibility;
+  const emoji =
+    compatibility_level === "VERY HIGH" ? "🟢" :
+    compatibility_level === "HIGH"      ? "🟢" :
+    compatibility_level === "MEDIUM"    ? "🟡" :
+    compatibility_level === "LOW"       ? "🟠" :
+    "🔴";
+  return `🧬 *Personal Compatibility: ${compatibility_level}* ${emoji}\n\n${reason}`.trim();
 }
 
 // ─── Commands ─────────────────────────────────────────────────────────────────
@@ -566,6 +654,14 @@ bot.on(message("photo"), async (ctx) => {
   }
 
   const thinking = await ctx.reply("Analyzing your product... 🔍");
+  let thinkingDeleted = false;
+  const deleteThinking = async () => {
+    if (!thinkingDeleted) {
+      await ctx.telegram.deleteMessage(ctx.chat.id, thinking.message_id).catch(() => {});
+      thinkingDeleted = true;
+    }
+  };
+
   try {
     const photos = ctx.message.photo;
     const photo = photos[photos.length - 1];
@@ -587,12 +683,9 @@ bot.on(message("photo"), async (ctx) => {
       health_conditions:        user.health_conditions,
     };
 
-    const { analysis, tokens } = await analyzeProductImage(
-      compressed.toString("base64"),
-      profile
-    );
-
-    await ctx.telegram.deleteMessage(ctx.chat.id, thinking.message_id);
+    // ── AI Call 1: Generic product analysis ──────────────────────────────────
+    const { analysis, tokens: tokens1 } = await analyzeProduct(compressed.toString("base64"));
+    await deleteThinking();
 
     if (!analysis.is_product) {
       await ctx.reply(
@@ -601,20 +694,42 @@ bot.on(message("photo"), async (ctx) => {
       return;
     }
 
+    // Message 1: ingredient breakdown
+    await ctx.reply(formatAnalysis(analysis), { parse_mode: "Markdown" });
+
+    // ── AI Call 2: Personal compatibility ────────────────────────────────────
+    let finalTokens = tokens1;
+    try {
+      const { compatibility, tokens: tokens2 } = await analyzeCompatibility(analysis.ingredients, profile);
+      finalTokens = {
+        prompt:          tokens1.prompt          + tokens2.prompt,
+        candidates:      tokens1.candidates      + tokens2.candidates,
+        thoughts:        tokens1.thoughts        + tokens2.thoughts,
+        total:           tokens1.total           + tokens2.total,
+        search_requests: tokens1.search_requests + tokens2.search_requests,
+        cost_usd: Number((tokens1.cost_usd + tokens2.cost_usd).toFixed(6)),
+      };
+      // Message 2: personal compatibility
+      await ctx.reply(formatCompatibility(compatibility), { parse_mode: "Markdown" });
+    } catch (err) {
+      console.error("Compatibility analysis failed:", err);
+      await ctx.reply(
+        "I couldn't evaluate personal compatibility, but the ingredient analysis above is still valid."
+      );
+    }
+
     await saveScan(ctx.from, {
       timestamp: new Date().toISOString(),
       analysis,
-      tokens,
+      tokens: finalTokens,
     });
 
     console.log(
-      `[Scan] @${ctx.from.username ?? id} — ${analysis.product_name ?? "?"} by ${analysis.brand ?? "?"} — tokens: ${tokens.total}, search: ${tokens.search_requests ? "yes" : "no"}, cost: $${tokens.cost_usd}`
+      `[Scan] @${ctx.from.username ?? id} — ${analysis.product_name ?? "?"} by ${analysis.brand ?? "?"} — tokens: ${finalTokens.total}, search: ${finalTokens.search_requests ? "yes" : "no"}, cost: $${finalTokens.cost_usd}`
     );
-
-    await ctx.reply(formatAnalysis(analysis), { parse_mode: "Markdown" });
   } catch (error) {
     console.error("Analysis error:", error);
-    await ctx.telegram.deleteMessage(ctx.chat.id, thinking.message_id).catch(() => {});
+    await deleteThinking();
     await ctx.reply("Sorry, I couldn't analyze that image. Please try again.");
   }
 });
