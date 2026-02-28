@@ -5,10 +5,11 @@
     "first_name": "Shivansh",
     "last_name": "Sharma",
     "joined_at": "2026-02-28T16:55:08.202Z",
-    "total_scans": 28,
-    "total_cost_usd": 0.882802,
+    "total_scans": 31,
+    "total_cost_usd": 0.936779,
     "is_onboarded": true,
     "onboarding_step": 6,
+    "scans_left": 0,
     "onboarding_raw_answers": {
       "q1": "eggetarian",
       "q2": "soy",

@@ -107,6 +107,7 @@ interface UserData extends HealthProfile {
   joined_at: string;
   total_scans: number;
   total_cost_usd: number;
+  scans_left: number;
   // Onboarding
   is_onboarded: boolean;
   onboarding_step: number; // 0=not started, 1–5=waiting for qN, 6=done
@@ -148,6 +149,7 @@ function newUser(from: {
     joined_at: new Date().toISOString(),
     total_scans: 0,
     total_cost_usd: 0,
+    scans_left: 3,
     is_onboarded: false,
     onboarding_step: 0,
     onboarding_raw_answers: {},
@@ -844,7 +846,7 @@ Return a compatibility_level (VERY HIGH, HIGH, MEDIUM, LOW, or NONE) and a conci
 
 // ─── Formatter ────────────────────────────────────────────────────────────────
 
-function formatProduct(product: Product, cacheHit: boolean): string {
+function formatProduct(product: Product, cacheHit: boolean, scansLeft: number): string {
   const { product_name, brand, health_score, ingredients } = product;
   const score = health_score ?? 0;
   const emoji = score >= 70 ? "🟢" : score >= 40 ? "🟡" : "🔴";
@@ -870,7 +872,7 @@ function formatProduct(product: Product, cacheHit: boolean): string {
     for (const i of ingredients.bad) msg += `• *${i.name}* — ${i.reason}\n`;
   }
 
-  msg += `\n\n_${cacheHit ? "⚡ Loaded from cache" : "🔬 Freshly analyzed"}_`;
+  msg += `\n\n_${cacheHit ? "⚡ Loaded from cache" : "🔬 Freshly analyzed"} · ${scansLeft} scan${scansLeft === 1 ? "" : "s"} remaining_`;
   return msg.trim();
 }
 
@@ -983,6 +985,14 @@ bot.on(message("photo"), async (ctx) => {
     return;
   }
 
+  // Scan limit check
+  if ((user.scans_left ?? 0) <= 0) {
+    await ctx.reply(
+      "You've used all your free scans. Please upgrade to continue scanning products! 🚀"
+    );
+    return;
+  }
+
   const thinking = await ctx.reply("Analyzing your product... 🔍");
   let thinkingDeleted = false;
   const deleteThinking = async () => {
@@ -1062,8 +1072,12 @@ bot.on(message("photo"), async (ctx) => {
       return;
     }
 
+    // Decrement scans_left before sending reply so the count shown is accurate
+    user.scans_left = Math.max(0, (user.scans_left ?? 0) - 1);
+    await updateUser(user);
+
     // Message 1: ingredient breakdown
-    await ctx.reply(formatProduct(product, !!cached), { parse_mode: "Markdown" });
+    await ctx.reply(formatProduct(product, !!cached, user.scans_left), { parse_mode: "Markdown" });
 
     // ── Step 4: Personal compatibility ───────────────────────────────────────
     // ALWAYS runs a fresh Gemini call — never cached, never reused.

@@ -375,6 +375,57 @@
           "search_requests": 0,
           "cost_usd": 0.004339
         }
+      },
+      {
+        "timestamp": "2026-02-28T20:29:16.438Z",
+        "product_id": "47aaa4c1-ef3c-406b-a2d2-0b4bd05c3ab5",
+        "cache_hit": false,
+        "compatibility": {
+          "compatibility_level": "VERY HIGH",
+          "reason": "The ingredients are fully compatible with an eggetarian diet and do not contain soy or lead."
+        },
+        "tokens": {
+          "prompt": 3056,
+          "candidates": 963,
+          "thoughts": 2330,
+          "total": 6349,
+          "search_requests": 1,
+          "cost_usd": 0.046407
+        }
+      },
+      {
+        "timestamp": "2026-02-28T20:29:36.054Z",
+        "product_id": "5d56d8b1-8951-4432-afd1-077b46c4da01",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "VERY HIGH",
+          "reason": "The product is compatible with an eggetarian diet and does not contain soy or any other ingredients identified in the user's health profile as allergens or sensitivities."
+        },
+        "tokens": {
+          "prompt": 1378,
+          "candidates": 80,
+          "thoughts": 987,
+          "total": 2445,
+          "search_requests": 0,
+          "cost_usd": 0.00389
+        }
+      },
+      {
+        "timestamp": "2026-02-28T20:30:20.930Z",
+        "product_id": "13f91f6b-26cb-4566-aaf1-d0d5bae6f3f8",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "MEDIUM",
+          "reason": "Alpha Tocopherol (Vitamin E) is frequently derived from soy, which may trigger the user's soy allergy. All other ingredients are compatible with the user's profile."
+        },
+        "tokens": {
+          "prompt": 1359,
+          "candidates": 84,
+          "thoughts": 916,
+          "total": 2359,
+          "search_requests": 0,
+          "cost_usd": 0.00368
+        }
       }
     ]
   }
