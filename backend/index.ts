@@ -37,6 +37,7 @@ interface TokenUsage {
   candidates: number;
   thoughts: number;
   total: number;
+  search_requests: number; // Track if a search actually happened
   cost_usd: number;
 }
 
@@ -100,7 +101,6 @@ async function upsertUser(from: {
       total_cost_usd: 0,
     };
   } else {
-    // keep user info fresh
     db[id].username = from.username ?? null;
     db[id].first_name = from.first_name;
     db[id].last_name = from.last_name ?? null;
@@ -110,11 +110,10 @@ async function upsertUser(from: {
 
 async function saveScan(
   from: { id: number; username?: string },
-  scan: ScanRecord
+  scan: ScanRecord,
 ) {
   const id = String(from.id);
 
-  // responses.json
   const responses = await loadJSON<ResponsesDB>(RESPONSES_PATH, {});
   if (!responses[id]) {
     responses[id] = { username: from.username ?? null, scans: [] };
@@ -123,12 +122,11 @@ async function saveScan(
   responses[id].scans.push(scan);
   await saveJSON(RESPONSES_PATH, responses);
 
-  // users.json — update counters
   const users = await loadJSON<UsersDB>(USERS_PATH, {});
   if (users[id]) {
     users[id].total_scans += 1;
     users[id].total_cost_usd = Number(
-      (users[id].total_cost_usd + scan.tokens.cost_usd).toFixed(6)
+      (users[id].total_cost_usd + scan.tokens.cost_usd).toFixed(6),
     );
     await saveJSON(USERS_PATH, users);
   }
@@ -136,24 +134,33 @@ async function saveScan(
 
 // --- Image processing ---
 
-/** Resize to max width 896px, keep aspect ratio, quality 78, strip metadata */
 async function compressImage(buffer: Buffer): Promise<Buffer> {
   return sharp(buffer)
     .resize({ width: 896, withoutEnlargement: true })
     .jpeg({ quality: 78 })
-    // sharp strips metadata by default (no .withMetadata() call)
     .toBuffer();
 }
 
 // --- Gemini ---
 
 const MODEL = "gemini-3-flash-preview";
-const PRICE = { input: 0.5, output: 3.0 }; // per 1M tokens
 
-function calcCost(promptTokens: number, outputTokens: number): number {
+// Current pricing metrics
+const PRICE = {
+  input: 0.5, // $0.50 per 1M tokens
+  output: 3.0, // $3.00 per 1M tokens
+  search: 35.0, // $35.00 per 1,000 search requests ($0.035 each)
+};
+
+function calcCost(
+  promptTokens: number,
+  outputTokens: number,
+  searchRequests: number,
+): number {
   return (
     (promptTokens / 1_000_000) * PRICE.input +
-    (outputTokens / 1_000_000) * PRICE.output
+    (outputTokens / 1_000_000) * PRICE.output +
+    (searchRequests / 1000) * PRICE.search
   );
 }
 
@@ -205,11 +212,17 @@ const responseSchema = {
       required: ["good", "okay", "bad"],
     },
   },
-  required: ["is_product", "product_name", "brand", "health_score", "ingredients"],
+  required: [
+    "is_product",
+    "product_name",
+    "brand",
+    "health_score",
+    "ingredients",
+  ],
 };
 
 async function analyzeProductImage(
-  imageBase64: string
+  imageBase64: string,
 ): Promise<{ analysis: Analysis; tokens: TokenUsage }> {
   const result = await ai.models.generateContent({
     model: MODEL,
@@ -218,19 +231,13 @@ async function analyzeProductImage(
         role: "user",
         parts: [
           {
-            text: `You are a health analyst. Analyze this product image.
-
-If this is NOT a packaged food or cosmetic/personal care product, set is_product: false and explain in rejection_reason.
-
-If it IS a product:
-1. Extract the product_name and brand from the label
-2. Give a health_score from 0-100 (100 = perfectly healthy, 0 = very harmful)
+            text: `Analyze this image.
+1. Extract the product_name and brand from the label.
+2. Give a health_score from 0-100 (100 = perfectly healthy, 0 = very harmful).
 3. List ALL visible ingredients categorized:
-   - good: beneficial ingredients with a brief reason why
-   - okay: neutral/moderate ingredients with brief context
-   - bad: harmful/unhealthy ingredients with a brief reason why
-
-Use web search to get current ingredient safety data before categorizing.`,
+   - good: beneficial ingredients with a brief reason why.
+   - okay: neutral/moderate ingredients with brief context.
+   - bad: harmful/unhealthy ingredients with a brief reason why.`,
           },
           {
             inlineData: {
@@ -244,6 +251,12 @@ Use web search to get current ingredient safety data before categorizing.`,
     config: {
       temperature: 0.5,
       maxOutputTokens: 4096,
+      // Moved the persona and strict rules to system instructions for better adherence
+      systemInstruction: `Today is ${new Date().toDateString()}. You are an expert health and wellness analyst. Your job is to analyze images of packaged food or cosmetic/personal care products.
+      
+If the image is NOT a packaged food or cosmetic/personal care product, set is_product: false and explain why in rejection_reason.
+
+You MUST use the googleSearch tool to cross-reference current ingredient safety data, recent FDA/EFSA rulings, and modern nutritional consensus before finalizing your categorization.`,
       responseMimeType: "application/json",
       responseSchema,
       tools: [{ googleSearch: {} }],
@@ -256,18 +269,33 @@ Use web search to get current ingredient safety data before categorizing.`,
     "";
   if (!text) throw new Error("Empty response from Gemini");
 
+  // Extract Token Usage
   const usage = (result as any).usageMetadata ?? {};
   const prompt = usage.promptTokenCount ?? 0;
   const candidates = usage.candidatesTokenCount ?? 0;
   const thoughts = usage.thoughtsTokenCount ?? 0;
   const total = usage.totalTokenCount ?? prompt + candidates + thoughts;
 
+  // Extract Search Usage from Grounding Metadata
+  const groundingMetadata = (result as any).candidates?.[0]?.groundingMetadata;
+  const webQueries = groundingMetadata?.webSearchQueries || [];
+  const searchUsed = webQueries.length > 0 ? 1 : 0;
+
+  if (searchUsed) {
+    console.log(`[Grounding] Triggered web searches:`, webQueries);
+  } else {
+    console.log(`[Grounding] Relied on internal knowledge base.`);
+  }
+
   const tokens: TokenUsage = {
     prompt,
     candidates,
     thoughts,
     total,
-    cost_usd: Number(calcCost(prompt, candidates + thoughts).toFixed(6)),
+    search_requests: searchUsed,
+    cost_usd: Number(
+      calcCost(prompt, candidates + thoughts, searchUsed).toFixed(6),
+    ),
   };
 
   return { analysis: JSON.parse(text.trim()), tokens };
@@ -311,7 +339,7 @@ function formatAnalysis(analysis: Analysis): string {
 
 bot.on(message("text"), async (ctx) => {
   await ctx.reply(
-    "Please send a photo of a packaged food or cosmetic product and I will analyze its health score and ingredients for you!"
+    "Please send a photo of a packaged food or cosmetic product and I will analyze its health score and ingredients for you!",
   );
 });
 
@@ -330,7 +358,9 @@ bot.on(message("photo"), async (ctx) => {
 
     const compressed = await compressImage(originalBuffer);
     const { width, height } = await sharp(compressed).metadata();
-    console.log(`[Image] Compressed: ${width}x${height}, ${compressed.length} bytes`);
+    console.log(
+      `[Image] Compressed: ${width}x${height}, ${compressed.length} bytes`,
+    );
 
     const base64 = compressed.toString("base64");
     const { analysis, tokens } = await analyzeProductImage(base64);
@@ -339,7 +369,7 @@ bot.on(message("photo"), async (ctx) => {
 
     if (!analysis.is_product) {
       await ctx.reply(
-        `That doesn't look like a packaged product. ${analysis.rejection_reason || "Please send a photo of a food or cosmetic product."}`
+        `That doesn't look like a packaged product. ${analysis.rejection_reason || "Please send a photo of a food or cosmetic product."}`,
       );
       return;
     }
@@ -351,15 +381,17 @@ bot.on(message("photo"), async (ctx) => {
     });
 
     console.log(
-      `[Save] @${ctx.from.username ?? ctx.from.id} — ${analysis.product_name ?? "unknown"} by ${analysis.brand ?? "unknown"} — tokens: ${tokens.total}, cost: $${tokens.cost_usd}`
+      `[Save] @${ctx.from.username ?? ctx.from.id} — ${analysis.product_name ?? "unknown"} by ${analysis.brand ?? "unknown"} — tokens: ${tokens.total}, search_used: ${tokens.search_requests ? "Yes" : "No"}, cost: $${tokens.cost_usd}`,
     );
 
     await ctx.reply(formatAnalysis(analysis), { parse_mode: "Markdown" });
   } catch (error) {
     console.error("Analysis error:", error);
-    await ctx.telegram.deleteMessage(ctx.chat.id, thinking.message_id).catch(() => {});
+    await ctx.telegram
+      .deleteMessage(ctx.chat.id, thinking.message_id)
+      .catch(() => {});
     await ctx.reply(
-      "Sorry, I couldn't analyze that image. Please try again with a clearer photo."
+      "Sorry, I couldn't analyze that image. Please try again with a clearer photo.",
     );
   }
 });
