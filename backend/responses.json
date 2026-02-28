@@ -205,6 +205,125 @@
           "search_requests": 0,
           "cost_usd": 0.005312
         }
+      },
+      {
+        "timestamp": "2026-02-28T18:39:50.762Z",
+        "product_id": "409f55df-bb59-4bec-82d2-fdfc41f5f3b7",
+        "cache_hit": false,
+        "compatibility": {
+          "compatibility_level": "HIGH",
+          "reason": "The ingredients are compatible with an eggetarian diet and contain no explicit soy or lead. While 'Natural Flavors' can occasionally be a hidden source of soy, the product generally aligns with the user's health profile."
+        },
+        "tokens": {
+          "prompt": 3461,
+          "candidates": 997,
+          "thoughts": 1387,
+          "total": 5845,
+          "search_requests": 1,
+          "cost_usd": 0.043883
+        }
+      },
+      {
+        "timestamp": "2026-02-28T18:51:52.592Z",
+        "product_id": "47aaa4c1-ef3c-406b-a2d2-0b4bd05c3ab5",
+        "cache_hit": false,
+        "compatibility": {
+          "compatibility_level": "VERY HIGH",
+          "reason": "The ingredients do not contain soy, animal-derived flesh, or lead, making them fully compatible with an eggetarian diet and the user's specific health profile."
+        },
+        "tokens": {
+          "prompt": 2927,
+          "candidates": 843,
+          "thoughts": 2215,
+          "total": 5985,
+          "search_requests": 1,
+          "cost_usd": 0.045638
+        }
+      },
+      {
+        "timestamp": "2026-02-28T18:52:09.116Z",
+        "product_id": "409f55df-bb59-4bec-82d2-fdfc41f5f3b7",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "HIGH",
+          "reason": "The product ingredients are consistent with an eggetarian diet and do not explicitly contain soy or lead. However, 'Natural Flavors' can occasionally be a source of hidden allergens, requiring slight caution for those with a soy allergy."
+        },
+        "tokens": {
+          "prompt": 1448,
+          "candidates": 83,
+          "thoughts": 1222,
+          "total": 2753,
+          "search_requests": 0,
+          "cost_usd": 0.00464
+        }
+      },
+      {
+        "timestamp": "2026-02-28T18:53:21.434Z",
+        "product_id": "b8cf80b6-75c3-462e-a262-8b4ad396af8e",
+        "cache_hit": false,
+        "compatibility": {
+          "compatibility_level": "HIGH",
+          "reason": "The ingredients are compatible with an eggetarian diet and do not explicitly list soy, though 'Natural Flavors' can occasionally contain soy-derived carriers which may affect those with severe allergies."
+        },
+        "tokens": {
+          "prompt": 2899,
+          "candidates": 999,
+          "thoughts": 2091,
+          "total": 5989,
+          "search_requests": 1,
+          "cost_usd": 0.045721
+        }
+      },
+      {
+        "timestamp": "2026-02-28T18:55:28.544Z",
+        "product_id": "be213ca2-d321-4abe-900e-9b41667d1e45",
+        "cache_hit": false,
+        "compatibility": {
+          "compatibility_level": "HIGH",
+          "reason": "The ingredients are compatible with an eggetarian diet and do not explicitly list soy. However, 'Natural & Artificial Flavors' can occasionally contain soy-derived carriers, which may pose a minor risk for those with soy allergies."
+        },
+        "tokens": {
+          "prompt": 3175,
+          "candidates": 876,
+          "thoughts": 1698,
+          "total": 5749,
+          "search_requests": 1,
+          "cost_usd": 0.04431
+        }
+      },
+      {
+        "timestamp": "2026-02-28T18:57:07.798Z",
+        "product_id": "62d23a88-aadb-4539-a22d-961fc08e1358",
+        "cache_hit": false,
+        "compatibility": {
+          "compatibility_level": "HIGH",
+          "reason": "The ingredients do not contain soy or animal-derived components, making the product compatible with your soy allergy and eggetarian diet."
+        },
+        "tokens": {
+          "prompt": 3558,
+          "candidates": 826,
+          "thoughts": 3033,
+          "total": 7417,
+          "search_requests": 1,
+          "cost_usd": 0.048357
+        }
+      },
+      {
+        "timestamp": "2026-02-28T18:57:20.043Z",
+        "product_id": "5d56d8b1-8951-4432-afd1-077b46c4da01",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "VERY HIGH",
+          "reason": "The product is dairy-based, which is compatible with an eggetarian diet, and it contains no soy ingredients or other substances identified in the user's allergy and sensitivity profile."
+        },
+        "tokens": {
+          "prompt": 1414,
+          "candidates": 87,
+          "thoughts": 996,
+          "total": 2497,
+          "search_requests": 0,
+          "cost_usd": 0.003955
+        }
       }
     ]
   }

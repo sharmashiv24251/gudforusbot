@@ -328,14 +328,12 @@ const profileExtractionSchema = {
 };
 
 async function extractHealthProfile(answers: OnboardingAnswers): Promise<HealthProfile> {
-  const result = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
-    contents: [
-      {
-        role: "user",
-        parts: [
-          {
-            text: `Extract a structured health profile from these user answers.
+  const contents = [
+    {
+      role: "user" as const,
+      parts: [
+        {
+          text: `Extract a structured health profile from these user answers.
 Rules:
 - Normalize spelling mistakes and lowercase everything
 - Remove duplicates
@@ -347,10 +345,14 @@ Q2 (Food allergies): ${answers.q2 ?? ""}
 Q3 (Ingredient sensitivities): ${answers.q3 ?? ""}
 Q4 (Skin sensitivities): ${answers.q4 ?? ""}
 Q5 (Health conditions): ${answers.q5 ?? ""}`,
-          },
-        ],
-      },
-    ],
+        },
+      ],
+    },
+  ];
+
+  const result = await ai.models.generateContent({
+    model: "gemini-3-flash-preview",
+    contents,
     config: {
       temperature: 0.1,
       responseMimeType: "application/json",
@@ -358,9 +360,29 @@ Q5 (Health conditions): ${answers.q5 ?? ""}`,
     },
   });
 
-  const text = result.text ?? "";
+  const text = extractOutputText(result);
   if (!text) throw new Error("Empty response during profile extraction");
-  return JSON.parse(text.trim());
+  console.log(`[extractHealthProfile] Response length: ${text.length} chars`);
+
+  try {
+    return parseModelJSON<HealthProfile>(text);
+  } catch (err) {
+    console.log(`[Retry] extractHealthProfile — ${(err as Error).message}`);
+    const retryResult = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents,
+      config: {
+        temperature: 0,
+        responseMimeType: "application/json",
+        responseSchema: profileExtractionSchema,
+        systemInstruction: "Return ONLY valid JSON. Do not truncate. Do not include explanations.",
+      },
+    });
+    const retryText = extractOutputText(retryResult);
+    if (!retryText) throw new Error("Empty response during profile extraction retry");
+    console.log(`[Retry] extractHealthProfile response length: ${retryText.length} chars`);
+    return parseModelJSON<HealthProfile>(retryText);
+  }
 }
 
 function formatProfile(user: UserData): string {
@@ -447,6 +469,37 @@ function extractOutputText(result: any): string {
   return outputText || result.text || "";
 }
 
+/**
+ * Parse JSON from a model response that may contain surrounding prose.
+ * Tries direct parse first; falls back to extracting the first {...} block.
+ */
+function parseModelJSON<T>(text: string): T {
+  const trimmed = text.trim();
+
+  // Guard: a valid JSON object must end with '}'
+  if (!trimmed.endsWith("}")) {
+    console.error(`[parseModelJSON] Truncated response (${trimmed.length} chars) — doesn't end with '}'`);
+    throw new Error("Truncated JSON from model");
+  }
+
+  try {
+    return JSON.parse(trimmed);
+  } catch {
+    const match = trimmed.match(/\{[\s\S]*\}/);
+    if (match) {
+      try {
+        return JSON.parse(match[0]);
+      } catch {
+        if (!match[0].endsWith("}")) {
+          throw new Error("Truncated JSON from model");
+        }
+      }
+    }
+    console.error(`[parseModelJSON] Failed to parse model response (${trimmed.length} chars)`);
+    throw new SyntaxError(`Invalid JSON in model response: ${trimmed.slice(0, 120)}`);
+  }
+}
+
 const MODEL = "gemini-3-flash-preview";
 const PRICE = { input: 0.5, output: 3.0, search: 35.0 };
 
@@ -526,28 +579,30 @@ const compatibilitySchema = {
 async function extractBasicProductInfo(
   imageBase64: string
 ): Promise<{ extraction: ProductExtraction; tokens: TokenUsage }> {
-  const result = await ai.models.generateContent({
-    model: MODEL,
-    contents: [
-      {
-        role: "user",
-        parts: [
-          {
-            text: `Look at this image. Extract:
+  const contents = [
+    {
+      role: "user" as const,
+      parts: [
+        {
+          text: `Look at this image. Extract:
 1. Is this a packaged food or cosmetic/personal care product? (is_product)
 2. The exact product_name as printed on the label.
 3. The exact brand name.
 
 If not a packaged product, set is_product to false and explain in rejection_reason.`,
-          },
-          { inlineData: { mimeType: "image/jpeg", data: imageBase64 } },
-        ],
-      },
-    ],
+        },
+        { inlineData: { mimeType: "image/jpeg" as const, data: imageBase64 } },
+      ],
+    },
+  ];
+
+  const result = await ai.models.generateContent({
+    model: MODEL,
+    contents,
     config: {
       temperature: 0.1,
-      maxOutputTokens: 256,
-      systemInstruction: `You are a product label reader. Extract only what is explicitly visible on the label. Do not infer or guess.`,
+      maxOutputTokens: 1024,
+      systemInstruction: `You are a product label reader. Extract only what is explicitly visible on the label. Do not infer or guess. Reply with JSON only — no explanatory text.`,
       responseMimeType: "application/json",
       responseSchema: extractionSchema,
     },
@@ -555,12 +610,40 @@ If not a packaged product, set is_product to false and explain in rejection_reas
 
   const text = extractOutputText(result);
   if (!text) throw new Error("Empty response from Gemini (extraction)");
+  console.log(`[extractBasicProductInfo] Response length: ${text.length} chars`);
 
   const usage = (result as any).usageMetadata ?? {};
-  const promptT = usage.promptTokenCount ?? 0;
-  const candidatesT = usage.candidatesTokenCount ?? 0;
-  const thoughtsT = usage.thoughtsTokenCount ?? 0;
-  const total = usage.totalTokenCount ?? promptT + candidatesT + thoughtsT;
+  let promptT = usage.promptTokenCount ?? 0;
+  let candidatesT = usage.candidatesTokenCount ?? 0;
+  let thoughtsT = usage.thoughtsTokenCount ?? 0;
+  let total = usage.totalTokenCount ?? promptT + candidatesT + thoughtsT;
+
+  let extraction: ProductExtraction;
+  try {
+    extraction = parseModelJSON<ProductExtraction>(text);
+  } catch (err) {
+    console.log(`[Retry] extractBasicProductInfo — ${(err as Error).message}`);
+    const retryResult = await ai.models.generateContent({
+      model: MODEL,
+      contents,
+      config: {
+        temperature: 0,
+        maxOutputTokens: 1024,
+        systemInstruction: "Return ONLY valid JSON. Do not truncate. Do not include explanations.",
+        responseMimeType: "application/json",
+        responseSchema: extractionSchema,
+      },
+    });
+    const retryText = extractOutputText(retryResult);
+    if (!retryText) throw new Error("Empty response from Gemini (extraction retry)");
+    console.log(`[Retry] extractBasicProductInfo response length: ${retryText.length} chars`);
+    const ru = (retryResult as any).usageMetadata ?? {};
+    promptT    += ru.promptTokenCount ?? 0;
+    candidatesT += ru.candidatesTokenCount ?? 0;
+    thoughtsT  += ru.thoughtsTokenCount ?? 0;
+    total      += ru.totalTokenCount ?? 0;
+    extraction = parseModelJSON<ProductExtraction>(retryText);
+  }
 
   const tokens: TokenUsage = {
     prompt: promptT,
@@ -571,28 +654,30 @@ If not a packaged product, set is_product to false and explain in rejection_reas
     cost_usd: Number(calcCost(promptT, candidatesT + thoughtsT, 0).toFixed(6)),
   };
 
-  return { extraction: JSON.parse(text.trim()), tokens };
+  return { extraction, tokens };
 }
 
 async function analyzeProductDeep(
   imageBase64: string
 ): Promise<{ analysis: Analysis; tokens: TokenUsage }> {
-  const result = await ai.models.generateContent({
-    model: MODEL,
-    contents: [
-      {
-        role: "user",
-        parts: [
-          {
-            text: `Analyze this image.
+  const contents = [
+    {
+      role: "user" as const,
+      parts: [
+        {
+          text: `Analyze this image.
 1. Extract product_name and brand from the label.
 2. Give a health_score from 0–100 based on general ingredient quality.
 3. Categorize ALL visible ingredients as good / okay / bad with a brief reason.`,
-          },
-          { inlineData: { mimeType: "image/jpeg", data: imageBase64 } },
-        ],
-      },
-    ],
+        },
+        { inlineData: { mimeType: "image/jpeg" as const, data: imageBase64 } },
+      ],
+    },
+  ];
+
+  const result = await ai.models.generateContent({
+    model: MODEL,
+    contents,
     config: {
       temperature: 0.5,
       maxOutputTokens: 4096,
@@ -605,16 +690,47 @@ async function analyzeProductDeep(
 
   const text = extractOutputText(result);
   if (!text) throw new Error("Empty response from Gemini");
+  console.log(`[analyzeProductDeep] Response length: ${text.length} chars`);
 
   const usage = (result as any).usageMetadata ?? {};
-  const promptT = usage.promptTokenCount ?? 0;
-  const candidatesT = usage.candidatesTokenCount ?? 0;
-  const thoughtsT = usage.thoughtsTokenCount ?? 0;
-  const total = usage.totalTokenCount ?? promptT + candidatesT + thoughtsT;
+  let promptT    = usage.promptTokenCount ?? 0;
+  let candidatesT = usage.candidatesTokenCount ?? 0;
+  let thoughtsT  = usage.thoughtsTokenCount ?? 0;
+  let total      = usage.totalTokenCount ?? promptT + candidatesT + thoughtsT;
 
   const groundingMeta = (result as any).candidates?.[0]?.groundingMetadata;
-  const searches = (groundingMeta?.webSearchQueries?.length ?? 0) > 0 ? 1 : 0;
+  let searches = (groundingMeta?.webSearchQueries?.length ?? 0) > 0 ? 1 : 0;
   if (searches) console.log(`[Grounding]`, groundingMeta?.webSearchQueries);
+
+  let analysis: Analysis;
+  try {
+    analysis = parseModelJSON<Analysis>(text);
+  } catch (err) {
+    console.log(`[Retry] analyzeProductDeep — ${(err as Error).message}`);
+    const retryResult = await ai.models.generateContent({
+      model: MODEL,
+      contents,
+      config: {
+        temperature: 0,
+        maxOutputTokens: 4096,
+        systemInstruction: "Return ONLY valid JSON. Do not truncate. Do not include explanations.",
+        responseMimeType: "application/json",
+        responseSchema,
+        tools: [{ googleSearch: {} }],
+      },
+    });
+    const retryText = extractOutputText(retryResult);
+    if (!retryText) throw new Error("Empty response from Gemini (analyzeProductDeep retry)");
+    console.log(`[Retry] analyzeProductDeep response length: ${retryText.length} chars`);
+    const ru = (retryResult as any).usageMetadata ?? {};
+    promptT    += ru.promptTokenCount ?? 0;
+    candidatesT += ru.candidatesTokenCount ?? 0;
+    thoughtsT  += ru.thoughtsTokenCount ?? 0;
+    total      += ru.totalTokenCount ?? 0;
+    const rg = (retryResult as any).candidates?.[0]?.groundingMetadata;
+    if ((rg?.webSearchQueries?.length ?? 0) > 0) searches += 1;
+    analysis = parseModelJSON<Analysis>(retryText);
+  }
 
   const tokens: TokenUsage = {
     prompt: promptT,
@@ -625,7 +741,7 @@ async function analyzeProductDeep(
     cost_usd: Number(calcCost(promptT, candidatesT + thoughtsT, searches).toFixed(6)),
   };
 
-  return { analysis: JSON.parse(text.trim()), tokens };
+  return { analysis, tokens };
 }
 
 async function analyzeCompatibility(
@@ -646,14 +762,12 @@ Ingredient sensitivities: ${profile.ingredient_sensitivities.join(", ") || "none
 Skin sensitivities: ${profile.skin_allergies.join(", ") || "none"}
 Health conditions: ${profile.health_conditions.join(", ") || "none"}`;
 
-  const result = await ai.models.generateContent({
-    model: MODEL,
-    contents: [
-      {
-        role: "user",
-        parts: [
-          {
-            text: `Evaluate how compatible the following product ingredients are with the user's personal health profile.
+  const contents = [
+    {
+      role: "user" as const,
+      parts: [
+        {
+          text: `Evaluate how compatible the following product ingredients are with the user's personal health profile.
 
 Ingredients:
 ${allIngredients}
@@ -662,10 +776,14 @@ User Health Profile:
 ${profileText}
 
 Return a compatibility_level (VERY HIGH, HIGH, MEDIUM, LOW, or NONE) and a concise reason referencing the user's specific profile. If the profile has no restrictions, return VERY HIGH.`,
-          },
-        ],
-      },
-    ],
+        },
+      ],
+    },
+  ];
+
+  const result = await ai.models.generateContent({
+    model: MODEL,
+    contents,
     config: {
       temperature: 0.3,
       maxOutputTokens: 2048,
@@ -677,12 +795,40 @@ Return a compatibility_level (VERY HIGH, HIGH, MEDIUM, LOW, or NONE) and a conci
 
   const text = extractOutputText(result);
   if (!text) throw new Error("Empty response from Gemini (compatibility)");
+  console.log(`[analyzeCompatibility] Response length: ${text.length} chars`);
 
   const usage = (result as any).usageMetadata ?? {};
-  const promptT = usage.promptTokenCount ?? 0;
-  const candidatesT = usage.candidatesTokenCount ?? 0;
-  const thoughtsT = usage.thoughtsTokenCount ?? 0;
-  const total = usage.totalTokenCount ?? promptT + candidatesT + thoughtsT;
+  let promptT    = usage.promptTokenCount ?? 0;
+  let candidatesT = usage.candidatesTokenCount ?? 0;
+  let thoughtsT  = usage.thoughtsTokenCount ?? 0;
+  let total      = usage.totalTokenCount ?? promptT + candidatesT + thoughtsT;
+
+  let compatibility: Compatibility;
+  try {
+    compatibility = parseModelJSON<Compatibility>(text);
+  } catch (err) {
+    console.log(`[Retry] analyzeCompatibility — ${(err as Error).message}`);
+    const retryResult = await ai.models.generateContent({
+      model: MODEL,
+      contents,
+      config: {
+        temperature: 0,
+        maxOutputTokens: 2048,
+        systemInstruction: "Return ONLY valid JSON. Do not truncate. Do not include explanations.",
+        responseMimeType: "application/json",
+        responseSchema: compatibilitySchema,
+      },
+    });
+    const retryText = extractOutputText(retryResult);
+    if (!retryText) throw new Error("Empty response from Gemini (compatibility retry)");
+    console.log(`[Retry] analyzeCompatibility response length: ${retryText.length} chars`);
+    const ru = (retryResult as any).usageMetadata ?? {};
+    promptT    += ru.promptTokenCount ?? 0;
+    candidatesT += ru.candidatesTokenCount ?? 0;
+    thoughtsT  += ru.thoughtsTokenCount ?? 0;
+    total      += ru.totalTokenCount ?? 0;
+    compatibility = parseModelJSON<Compatibility>(retryText);
+  }
 
   const tokens: TokenUsage = {
     prompt: promptT,
@@ -693,7 +839,7 @@ Return a compatibility_level (VERY HIGH, HIGH, MEDIUM, LOW, or NONE) and a conci
     cost_usd: Number(calcCost(promptT, candidatesT + thoughtsT, 0).toFixed(6)),
   };
 
-  return { compatibility: JSON.parse(text.trim()), tokens };
+  return { compatibility, tokens };
 }
 
 // ─── Formatter ────────────────────────────────────────────────────────────────
