@@ -1,6 +1,7 @@
 import { Telegraf } from "telegraf";
 import { message } from "telegraf/filters";
 import { GoogleGenAI } from "@google/genai";
+import sharp from "sharp";
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 if (!BOT_TOKEN) throw new Error("TELEGRAM_BOT_TOKEN is not set in .env");
@@ -21,6 +22,8 @@ interface Ingredient {
 interface Analysis {
   is_product: boolean;
   rejection_reason: string | null;
+  product_name: string | null;
+  brand: string | null;
   health_score: number;
   ingredients: {
     good: Ingredient[];
@@ -43,45 +46,111 @@ interface ScanRecord {
   tokens: TokenUsage;
 }
 
-interface UserRecord {
+interface UserScan {
+  username: string | null;
   scans: ScanRecord[];
 }
 
-type DB = { users: Record<string, UserRecord> };
+interface UserData {
+  id: string;
+  username: string | null;
+  first_name: string;
+  last_name: string | null;
+  joined_at: string;
+  total_scans: number;
+  total_cost_usd: number;
+}
 
-// --- DB helpers ---
+type ResponsesDB = Record<string, UserScan>;
+type UsersDB = Record<string, UserData>;
 
-const DB_PATH = new URL("./db.json", import.meta.url).pathname;
+// --- Storage helpers ---
 
-async function loadDB(): Promise<DB> {
+const RESPONSES_PATH = new URL("./responses.json", import.meta.url).pathname;
+const USERS_PATH = new URL("./users.json", import.meta.url).pathname;
+
+async function loadJSON<T>(path: string, fallback: T): Promise<T> {
   try {
-    return JSON.parse(await Bun.file(DB_PATH).text());
+    return JSON.parse(await Bun.file(path).text());
   } catch {
-    return { users: {} };
+    return fallback;
   }
 }
 
-async function saveDB(db: DB) {
-  await Bun.write(DB_PATH, JSON.stringify(db, null, 2));
+async function saveJSON(path: string, data: unknown) {
+  await Bun.write(path, JSON.stringify(data, null, 2));
 }
 
-async function saveScan(userId: string, scan: ScanRecord) {
-  const db = await loadDB();
-  if (!db.users[userId]?.scans) {
-    db.users[userId] = { scans: [] };
+async function upsertUser(from: {
+  id: number;
+  username?: string;
+  first_name: string;
+  last_name?: string;
+}) {
+  const db = await loadJSON<UsersDB>(USERS_PATH, {});
+  const id = String(from.id);
+  if (!db[id]) {
+    db[id] = {
+      id,
+      username: from.username ?? null,
+      first_name: from.first_name,
+      last_name: from.last_name ?? null,
+      joined_at: new Date().toISOString(),
+      total_scans: 0,
+      total_cost_usd: 0,
+    };
+  } else {
+    // keep user info fresh
+    db[id].username = from.username ?? null;
+    db[id].first_name = from.first_name;
+    db[id].last_name = from.last_name ?? null;
   }
-  db.users[userId].scans.push(scan);
-  await saveDB(db);
+  await saveJSON(USERS_PATH, db);
+}
+
+async function saveScan(
+  from: { id: number; username?: string },
+  scan: ScanRecord
+) {
+  const id = String(from.id);
+
+  // responses.json
+  const responses = await loadJSON<ResponsesDB>(RESPONSES_PATH, {});
+  if (!responses[id]) {
+    responses[id] = { username: from.username ?? null, scans: [] };
+  }
+  responses[id].username = from.username ?? null;
+  responses[id].scans.push(scan);
+  await saveJSON(RESPONSES_PATH, responses);
+
+  // users.json — update counters
+  const users = await loadJSON<UsersDB>(USERS_PATH, {});
+  if (users[id]) {
+    users[id].total_scans += 1;
+    users[id].total_cost_usd = Number(
+      (users[id].total_cost_usd + scan.tokens.cost_usd).toFixed(6)
+    );
+    await saveJSON(USERS_PATH, users);
+  }
+}
+
+// --- Image processing ---
+
+/** Resize to max width 896px, keep aspect ratio, quality 78, strip metadata */
+async function compressImage(buffer: Buffer): Promise<Buffer> {
+  return sharp(buffer)
+    .resize({ width: 896, withoutEnlargement: true })
+    .jpeg({ quality: 78 })
+    // sharp strips metadata by default (no .withMetadata() call)
+    .toBuffer();
 }
 
 // --- Gemini ---
 
 const MODEL = "gemini-3-flash-preview";
-// Pricing per 1M tokens
-const PRICE = { input: 0.5, output: 3.0 };
+const PRICE = { input: 0.5, output: 3.0 }; // per 1M tokens
 
 function calcCost(promptTokens: number, outputTokens: number): number {
-  // outputTokens = candidates + thoughts (both billed at output rate)
   return (
     (promptTokens / 1_000_000) * PRICE.input +
     (outputTokens / 1_000_000) * PRICE.output
@@ -93,6 +162,8 @@ const responseSchema = {
   properties: {
     is_product: { type: "boolean" },
     rejection_reason: { type: ["string", "null"] },
+    product_name: { type: ["string", "null"] },
+    brand: { type: ["string", "null"] },
     health_score: { type: "integer", minimum: 0, maximum: 100 },
     ingredients: {
       type: "object",
@@ -134,7 +205,7 @@ const responseSchema = {
       required: ["good", "okay", "bad"],
     },
   },
-  required: ["is_product", "health_score", "ingredients"],
+  required: ["is_product", "product_name", "brand", "health_score", "ingredients"],
 };
 
 async function analyzeProductImage(
@@ -152,8 +223,9 @@ async function analyzeProductImage(
 If this is NOT a packaged food or cosmetic/personal care product, set is_product: false and explain in rejection_reason.
 
 If it IS a product:
-1. Give a health_score from 0-100 (100 = perfectly healthy, 0 = very harmful)
-2. List ALL visible ingredients categorized:
+1. Extract the product_name and brand from the label
+2. Give a health_score from 0-100 (100 = perfectly healthy, 0 = very harmful)
+3. List ALL visible ingredients categorized:
    - good: beneficial ingredients with a brief reason why
    - okay: neutral/moderate ingredients with brief context
    - bad: harmful/unhealthy ingredients with a brief reason why
@@ -204,11 +276,16 @@ Use web search to get current ingredient safety data before categorizing.`,
 // --- Formatter ---
 
 function formatAnalysis(analysis: Analysis): string {
-  const { health_score, ingredients } = analysis;
+  const { product_name, brand, health_score, ingredients } = analysis;
   const scoreEmoji =
     health_score >= 70 ? "🟢" : health_score >= 40 ? "🟡" : "🔴";
 
-  let msg = `${scoreEmoji} *Health Score: ${health_score}/100*\n\n`;
+  let msg = "";
+  if (product_name) msg += `*${product_name}*`;
+  if (brand) msg += ` by _${brand}_`;
+  if (msg) msg += "\n\n";
+
+  msg += `${scoreEmoji} *Health Score: ${health_score}/100*\n\n`;
 
   if (ingredients.good.length > 0) {
     msg += `✅ *Good Ingredients*\n`;
@@ -245,11 +322,17 @@ bot.on(message("photo"), async (ctx) => {
     const photo = photos[photos.length - 1];
     if (!photo) throw new Error("No photo found");
 
+    await upsertUser(ctx.from);
+
     const fileLink = await ctx.telegram.getFileLink(photo.file_id);
     const response = await fetch(fileLink.href);
-    const buffer = await response.arrayBuffer();
-    const base64 = Buffer.from(buffer).toString("base64");
+    const originalBuffer = Buffer.from(await response.arrayBuffer());
 
+    const compressed = await compressImage(originalBuffer);
+    const { width, height } = await sharp(compressed).metadata();
+    console.log(`[Image] Compressed: ${width}x${height}, ${compressed.length} bytes`);
+
+    const base64 = compressed.toString("base64");
     const { analysis, tokens } = await analyzeProductImage(base64);
 
     await ctx.telegram.deleteMessage(ctx.chat.id, thinking.message_id);
@@ -261,16 +344,14 @@ bot.on(message("photo"), async (ctx) => {
       return;
     }
 
-    // Save to db.json
-    const userId = String(ctx.from.id);
-    await saveScan(userId, {
+    await saveScan(ctx.from, {
       timestamp: new Date().toISOString(),
       analysis,
       tokens,
     });
 
     console.log(
-      `[DB] Saved scan for user ${userId} — tokens: ${tokens.total}, cost: $${tokens.cost_usd}`
+      `[Save] @${ctx.from.username ?? ctx.from.id} — ${analysis.product_name ?? "unknown"} by ${analysis.brand ?? "unknown"} — tokens: ${tokens.total}, cost: $${tokens.cost_usd}`
     );
 
     await ctx.reply(formatAnalysis(analysis), { parse_mode: "Markdown" });

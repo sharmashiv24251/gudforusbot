@@ -1,0 +1,68 @@
+{
+  "1466820565": {
+    "username": "sharmashiv24251",
+    "scans": [
+      {
+        "timestamp": "2026-02-28T16:32:13.943Z",
+        "analysis": {
+          "is_product": true,
+          "product_name": "Turbo 25g Protein Milkshake (Chocolate)",
+          "brand": "Epigamia",
+          "health_score": 85,
+          "ingredients": {
+            "good": [
+              {
+                "name": "Skimmed Milk",
+                "reason": "An excellent source of high-quality protein and calcium, supporting muscle growth and bone health."
+              },
+              {
+                "name": "Milk Solids",
+                "reason": "Provides concentrated dairy protein, which is essential for muscle repair and recovery."
+              },
+              {
+                "name": "Cocoa Powder",
+                "reason": "Contains natural antioxidants called flavonoids that can support heart health and reduce inflammation."
+              }
+            ],
+            "okay": [
+              {
+                "name": "Water",
+                "reason": "A neutral base used for hydration and consistency."
+              },
+              {
+                "name": "Nature Identical Flavouring",
+                "reason": "Provides flavor without the high sugar content of natural syrups, though it is synthetically produced."
+              },
+              {
+                "name": "Edible Common Salt",
+                "reason": "Used in small amounts to enhance flavor; sodium intake should be monitored but is typically low in such drinks."
+              },
+              {
+                "name": "Acidity Regulators (INS 340, 452, 339)",
+                "reason": "Mineral salts used to maintain the drink's texture and stability; generally recognized as safe in moderate amounts."
+              }
+            ],
+            "bad": [
+              {
+                "name": "Sucralose (INS 955)",
+                "reason": "An artificial sweetener that allows for zero sugar, but some studies suggest it may negatively impact gut health or insulin response."
+              },
+              {
+                "name": "Carrageenan (INS 407)",
+                "reason": "A seaweed-derived thickener that has been linked to digestive inflammation and discomfort in sensitive individuals."
+              }
+            ]
+          },
+          "rejection_reason": null
+        },
+        "tokens": {
+          "prompt": 1522,
+          "candidates": 483,
+          "thoughts": 927,
+          "total": 2932,
+          "cost_usd": 0.004991
+        }
+      }
+    ]
+  }
+}
