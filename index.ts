@@ -127,8 +127,8 @@ type UsersDB = Record<string, UserData>;
 // ─── Storage ──────────────────────────────────────────────────────────────────
 
 const RESPONSES_PATH = new URL("./responses.json", import.meta.url).pathname;
-const USERS_PATH     = new URL("./users.json",     import.meta.url).pathname;
-const PRODUCTS_PATH  = new URL("./products.json",  import.meta.url).pathname;
+const USERS_PATH = new URL("./users.json", import.meta.url).pathname;
+const PRODUCTS_PATH = new URL("./products.json", import.meta.url).pathname;
 
 async function loadJSON<T>(path: string, fallback: T): Promise<T> {
   try {
@@ -181,12 +181,13 @@ async function updateUser(user: UserData) {
 
 async function saveScan(
   from: { id: number; username?: string },
-  scan: ScanRecord
+  scan: ScanRecord,
 ) {
   const id = String(from.id);
 
   const responses = await loadJSON<ResponsesDB>(RESPONSES_PATH, {});
-  if (!responses[id]) responses[id] = { username: from.username ?? null, scans: [] };
+  if (!responses[id])
+    responses[id] = { username: from.username ?? null, scans: [] };
   responses[id].username = from.username ?? null;
   responses[id].scans.push(scan);
   await saveJSON(RESPONSES_PATH, responses);
@@ -195,7 +196,7 @@ async function saveScan(
   if (db[id]) {
     db[id].total_scans += 1;
     db[id].total_cost_usd = Number(
-      (db[id].total_cost_usd + scan.tokens.cost_usd).toFixed(6)
+      (db[id].total_cost_usd + scan.tokens.cost_usd).toFixed(6),
     );
     await saveJSON(USERS_PATH, db);
   }
@@ -204,12 +205,25 @@ async function saveScan(
 // ─── Product Store ────────────────────────────────────────────────────────────
 
 const FILLER_WORDS = [
-  "soft drink", "beverage", "packaged", "product", "snack",
-  "food", "drink", "bar", "mix", "brand",
+  "soft drink",
+  "beverage",
+  "packaged",
+  "product",
+  "snack",
+  "food",
+  "drink",
+  "bar",
+  "mix",
+  "brand",
 ];
 
-function normalizeProductKey(brand: string | null, name: string | null): string {
-  let raw = `${brand ?? ""} ${name ?? ""}`.toLowerCase().replace(/[^\w\s]/g, " ");
+function normalizeProductKey(
+  brand: string | null,
+  name: string | null,
+): string {
+  let raw = `${brand ?? ""} ${name ?? ""}`
+    .toLowerCase()
+    .replace(/[^\w\s]/g, " ");
   for (const word of FILLER_WORDS) {
     raw = raw.replace(new RegExp(`\\b${word}\\b`, "gi"), " ");
   }
@@ -218,8 +232,18 @@ function normalizeProductKey(brand: string | null, name: string | null): string 
 
 async function fuzzyFindProduct(
   brand: string | null,
-  name: string | null
+  name: string | null,
 ): Promise<Product | null> {
+  if (!brand || !name) {
+    console.log("[Fuzzy SKIP] Missing brand or name");
+    return null;
+  }
+
+  if (name.trim().length < 6) {
+    console.log("[Fuzzy SKIP] Product name too short");
+    return null;
+  }
+
   const targetKey = normalizeProductKey(brand, name);
   if (!targetKey) return null;
 
@@ -232,22 +256,31 @@ async function fuzzyFindProduct(
     key: normalizeProductKey(p.brand, p.product_name),
   }));
 
-  const fuse = new Fuse(entries, { keys: ["key"], threshold: 0.15, includeScore: true });
-  const results = fuse.search(targetKey);
-  if (results.length === 0) return null;
+  const fuse = new Fuse(entries, {
+    keys: ["key"],
+    threshold: 0.08,
+    includeScore: true,
+  });
 
-  const best = results[0]!;
-  console.log(`[Fuzzy] "${targetKey}" → "${best.item.key}" (score: ${best.score?.toFixed(3)})`);
+  const results = fuse.search(targetKey);
+  if (!results.length) return null;
+
+  const best = results[0];
+
+  console.log(
+    `[Fuzzy] "${targetKey}" → "${best.item.key}" (score: ${best.score?.toFixed(3)})`,
+  );
+
   return best.item.product;
 }
 
 function combineTokens(a: TokenUsage, b: TokenUsage): TokenUsage {
   return {
-    prompt:          a.prompt          + b.prompt,
-    cached:          a.cached          + b.cached,
-    candidates:      a.candidates      + b.candidates,
-    thoughts:        a.thoughts        + b.thoughts,
-    total:           a.total           + b.total,
+    prompt: a.prompt + b.prompt,
+    cached: a.cached + b.cached,
+    candidates: a.candidates + b.candidates,
+    thoughts: a.thoughts + b.thoughts,
+    total: a.total + b.total,
     search_requests: a.search_requests + b.search_requests,
     cost_usd: Number((a.cost_usd + b.cost_usd).toFixed(6)),
   };
@@ -261,7 +294,7 @@ async function saveProduct(product: Product) {
 
 async function findProductByNameBrand(
   product_name: string | null,
-  brand: string | null
+  brand: string | null,
 ): Promise<Product | null> {
   const db = await loadJSON<Record<string, Product>>(PRODUCTS_PATH, {});
   if (!product_name && !brand) return null;
@@ -271,14 +304,20 @@ async function findProductByNameBrand(
   for (const key of Object.keys(db)) {
     const p = db[key];
     if (!p) continue;
-    if (norm(p.product_name) === targetName && norm(p.brand) === targetBrand) return p;
+    if (norm(p.product_name) === targetName && norm(p.brand) === targetBrand)
+      return p;
   }
   return null;
 }
 
-async function createOrGetProductFromAnalysis(analysis: Analysis): Promise<Product | null> {
+async function createOrGetProductFromAnalysis(
+  analysis: Analysis,
+): Promise<Product | null> {
   if (!analysis.is_product) return null;
-  const existing = await findProductByNameBrand(analysis.product_name, analysis.brand);
+  const existing = await findProductByNameBrand(
+    analysis.product_name,
+    analysis.brand,
+  );
   if (existing) return existing;
   const id = crypto.randomUUID();
   const product: Product = {
@@ -322,11 +361,11 @@ const QUESTIONS = [
 const profileExtractionSchema = {
   type: "object",
   properties: {
-    dietary_preferences:      { type: "array", items: { type: "string" } },
-    food_allergies:           { type: "array", items: { type: "string" } },
+    dietary_preferences: { type: "array", items: { type: "string" } },
+    food_allergies: { type: "array", items: { type: "string" } },
     ingredient_sensitivities: { type: "array", items: { type: "string" } },
-    skin_allergies:           { type: "array", items: { type: "string" } },
-    health_conditions:        { type: "array", items: { type: "string" } },
+    skin_allergies: { type: "array", items: { type: "string" } },
+    health_conditions: { type: "array", items: { type: "string" } },
   },
   required: [
     "dietary_preferences",
@@ -337,7 +376,9 @@ const profileExtractionSchema = {
   ],
 };
 
-async function extractHealthProfile(answers: OnboardingAnswers): Promise<HealthProfile> {
+async function extractHealthProfile(
+  answers: OnboardingAnswers,
+): Promise<HealthProfile> {
   const contents = [
     {
       role: "user" as const,
@@ -385,12 +426,16 @@ Q5 (Health conditions): ${answers.q5 ?? ""}`,
         temperature: 0,
         responseMimeType: "application/json",
         responseSchema: profileExtractionSchema,
-        systemInstruction: "Return ONLY valid JSON. Do not truncate. Do not include explanations.",
+        systemInstruction:
+          "Return ONLY valid JSON. Do not truncate. Do not include explanations.",
       },
     });
     const retryText = extractOutputText(retryResult);
-    if (!retryText) throw new Error("Empty response during profile extraction retry");
-    console.log(`[Retry] extractHealthProfile response length: ${retryText.length} chars`);
+    if (!retryText)
+      throw new Error("Empty response during profile extraction retry");
+    console.log(
+      `[Retry] extractHealthProfile response length: ${retryText.length} chars`,
+    );
     return parseModelJSON<HealthProfile>(retryText);
   }
 }
@@ -404,7 +449,11 @@ function formatProfile(user: UserData): string {
   let msg = `✅ *Your health profile is ready, ${user.first_name}!*\n\n`;
   msg += section("🥗", "Diet", user.dietary_preferences);
   msg += section("🚨", "Food Allergies", user.food_allergies);
-  msg += section("⚠️", "Ingredient Sensitivities", user.ingredient_sensitivities);
+  msg += section(
+    "⚠️",
+    "Ingredient Sensitivities",
+    user.ingredient_sensitivities,
+  );
   msg += section("🧴", "Skin Sensitivities", user.skin_allergies);
   msg += section("🏥", "Health Conditions", user.health_conditions);
 
@@ -421,11 +470,7 @@ function formatProfile(user: UserData): string {
   return msg.trim();
 }
 
-async function advanceOnboarding(
-  ctx: any,
-  user: UserData,
-  answer: string
-) {
+async function advanceOnboarding(ctx: any, user: UserData, answer: string) {
   // Save answer for the current step
   const qKey = `q${user.onboarding_step}` as keyof OnboardingAnswers;
   user.onboarding_raw_answers[qKey] = answer;
@@ -433,7 +478,9 @@ async function advanceOnboarding(
   if (user.onboarding_step < 5) {
     user.onboarding_step += 1;
     await updateUser(user);
-    await ctx.reply(QUESTIONS[user.onboarding_step - 1]!.prompt, { parse_mode: "Markdown" });
+    await ctx.reply(QUESTIONS[user.onboarding_step - 1]!.prompt, {
+      parse_mode: "Markdown",
+    });
   } else {
     // Q5 answered — extract profile
     const processing = await ctx.reply("Analyzing your health profile... ⏳");
@@ -447,12 +494,14 @@ async function advanceOnboarding(
       await ctx.reply(formatProfile(user), { parse_mode: "Markdown" });
     } catch (err) {
       console.error("Profile extraction failed:", err);
-      await ctx.telegram.deleteMessage(ctx.chat.id, processing.message_id).catch(() => {});
+      await ctx.telegram
+        .deleteMessage(ctx.chat.id, processing.message_id)
+        .catch(() => {});
       user.is_onboarded = true;
       user.onboarding_step = 6;
       await updateUser(user);
       await ctx.reply(
-        "Profile saved! You can now send product photos to analyze them. 📸"
+        "Profile saved! You can now send product photos to analyze them. 📸",
       );
     }
   }
@@ -488,7 +537,9 @@ function parseModelJSON<T>(text: string): T {
 
   // Guard: a valid JSON object must end with '}'
   if (!trimmed.endsWith("}")) {
-    console.error(`[parseModelJSON] Truncated response (${trimmed.length} chars) — doesn't end with '}'`);
+    console.error(
+      `[parseModelJSON] Truncated response (${trimmed.length} chars) — doesn't end with '}'`,
+    );
     throw new Error("Truncated JSON from model");
   }
 
@@ -505,30 +556,48 @@ function parseModelJSON<T>(text: string): T {
         }
       }
     }
-    console.error(`[parseModelJSON] Failed to parse model response (${trimmed.length} chars)`);
-    throw new SyntaxError(`Invalid JSON in model response: ${trimmed.slice(0, 120)}`);
+    console.error(
+      `[parseModelJSON] Failed to parse model response (${trimmed.length} chars)`,
+    );
+    throw new SyntaxError(
+      `Invalid JSON in model response: ${trimmed.slice(0, 120)}`,
+    );
   }
 }
 
 const MODEL = "gemini-3-flash-preview";
 const PRICE = { input: 0.5, cached: 0.05, output: 3.0, search: 35.0 };
 
-function calcCost(prompt: number, cached: number, output: number, searches: number): number {
+const EXTRACTION_MODEL = "gemini-2.5-flash";
+const EXTRACTION_PRICE = {
+  input: 0.15,
+  cached: 0.015,
+  output: 0.6,
+  search: 20.0,
+};
+
+function calcCost(
+  prompt: number,
+  cached: number,
+  output: number,
+  searches: number,
+  price = PRICE,
+): number {
   return (
-    (prompt  / 1_000_000) * PRICE.input +
-    (cached  / 1_000_000) * PRICE.cached +
-    (output  / 1_000_000) * PRICE.output +
-    (searches / 1000)     * PRICE.search
+    (prompt / 1_000_000) * price.input +
+    (cached / 1_000_000) * price.cached +
+    (output / 1_000_000) * price.output +
+    (searches / 1000) * price.search
   );
 }
 
 const extractionSchema = {
   type: "object",
   properties: {
-    is_product:       { type: "boolean" },
+    is_product: { type: "boolean" },
     rejection_reason: { type: ["string", "null"] },
-    product_name:     { type: ["string", "null"] },
-    brand:            { type: ["string", "null"] },
+    product_name: { type: ["string", "null"] },
+    brand: { type: ["string", "null"] },
   },
   required: ["is_product", "rejection_reason", "product_name", "brand"],
 };
@@ -536,11 +605,11 @@ const extractionSchema = {
 const responseSchema = {
   type: "object",
   properties: {
-    is_product:       { type: "boolean" },
+    is_product: { type: "boolean" },
     rejection_reason: { type: ["string", "null"] },
-    product_name:     { type: ["string", "null"] },
-    brand:            { type: ["string", "null"] },
-    health_score:     { type: "integer", minimum: 0, maximum: 100 },
+    product_name: { type: ["string", "null"] },
+    brand: { type: ["string", "null"] },
+    health_score: { type: "integer", minimum: 0, maximum: 100 },
     ingredients: {
       type: "object",
       properties: {
@@ -548,7 +617,10 @@ const responseSchema = {
           type: "array",
           items: {
             type: "object",
-            properties: { name: { type: "string" }, reason: { type: "string" } },
+            properties: {
+              name: { type: "string" },
+              reason: { type: "string" },
+            },
             required: ["name", "reason"],
           },
         },
@@ -556,7 +628,10 @@ const responseSchema = {
           type: "array",
           items: {
             type: "object",
-            properties: { name: { type: "string" }, reason: { type: "string" } },
+            properties: {
+              name: { type: "string" },
+              reason: { type: "string" },
+            },
             required: ["name", "reason"],
           },
         },
@@ -564,7 +639,10 @@ const responseSchema = {
           type: "array",
           items: {
             type: "object",
-            properties: { name: { type: "string" }, reason: { type: "string" } },
+            properties: {
+              name: { type: "string" },
+              reason: { type: "string" },
+            },
             required: ["name", "reason"],
           },
         },
@@ -583,7 +661,14 @@ const responseSchema = {
       required: ["compatibility_level", "reason"],
     },
   },
-  required: ["is_product", "product_name", "brand", "health_score", "ingredients", "compatibility"],
+  required: [
+    "is_product",
+    "product_name",
+    "brand",
+    "health_score",
+    "ingredients",
+    "compatibility",
+  ],
 };
 
 const compatibilitySchema = {
@@ -599,7 +684,7 @@ const compatibilitySchema = {
 };
 
 async function extractBasicProductInfo(
-  imageBase64: string
+  imageBase64: string,
 ): Promise<{ extraction: ProductExtraction; tokens: TokenUsage }> {
   const contents = [
     {
@@ -619,7 +704,7 @@ If not a packaged product, set is_product to false and explain in rejection_reas
   ];
 
   const result = await ai.models.generateContent({
-    model: MODEL,
+    model: EXTRACTION_MODEL,
     contents,
     config: {
       temperature: 0.1,
@@ -632,14 +717,17 @@ If not a packaged product, set is_product to false and explain in rejection_reas
 
   const text = extractOutputText(result);
   if (!text) throw new Error("Empty response from Gemini (extraction)");
-  console.log(`[extractBasicProductInfo] Response length: ${text.length} chars`);
+  console.log(
+    `[extractBasicProductInfo] Response length: ${text.length} chars`,
+  );
 
   const usage = (result as any).usageMetadata ?? {};
-  let cachedT     = usage.cachedContentTokenCount ?? 0;
-  let promptT     = (usage.promptTokenCount ?? 0) - cachedT;
+  let cachedT = usage.cachedContentTokenCount ?? 0;
+  let promptT = (usage.promptTokenCount ?? 0) - cachedT;
   let candidatesT = usage.candidatesTokenCount ?? 0;
-  let thoughtsT   = usage.thoughtsTokenCount ?? 0;
-  let total       = usage.totalTokenCount ?? promptT + cachedT + candidatesT + thoughtsT;
+  let thoughtsT = usage.thoughtsTokenCount ?? 0;
+  let total =
+    usage.totalTokenCount ?? promptT + cachedT + candidatesT + thoughtsT;
 
   let extraction: ProductExtraction;
   try {
@@ -647,26 +735,30 @@ If not a packaged product, set is_product to false and explain in rejection_reas
   } catch (err) {
     console.log(`[Retry] extractBasicProductInfo — ${(err as Error).message}`);
     const retryResult = await ai.models.generateContent({
-      model: MODEL,
+      model: EXTRACTION_MODEL,
       contents,
       config: {
         temperature: 0,
         maxOutputTokens: 1024,
-        systemInstruction: "Return ONLY valid JSON. Do not truncate. Do not include explanations.",
+        systemInstruction:
+          "Return ONLY valid JSON. Do not truncate. Do not include explanations.",
         responseMimeType: "application/json",
         responseSchema: extractionSchema,
       },
     });
     const retryText = extractOutputText(retryResult);
-    if (!retryText) throw new Error("Empty response from Gemini (extraction retry)");
-    console.log(`[Retry] extractBasicProductInfo response length: ${retryText.length} chars`);
+    if (!retryText)
+      throw new Error("Empty response from Gemini (extraction retry)");
+    console.log(
+      `[Retry] extractBasicProductInfo response length: ${retryText.length} chars`,
+    );
     const ru = (retryResult as any).usageMetadata ?? {};
-    const ruCached  = ru.cachedContentTokenCount ?? 0;
-    cachedT     += ruCached;
-    promptT     += (ru.promptTokenCount ?? 0) - ruCached;
+    const ruCached = ru.cachedContentTokenCount ?? 0;
+    cachedT += ruCached;
+    promptT += (ru.promptTokenCount ?? 0) - ruCached;
     candidatesT += ru.candidatesTokenCount ?? 0;
-    thoughtsT   += ru.thoughtsTokenCount ?? 0;
-    total       += ru.totalTokenCount ?? 0;
+    thoughtsT += ru.thoughtsTokenCount ?? 0;
+    total += ru.totalTokenCount ?? 0;
     extraction = parseModelJSON<ProductExtraction>(retryText);
   }
 
@@ -677,7 +769,15 @@ If not a packaged product, set is_product to false and explain in rejection_reas
     thoughts: thoughtsT,
     total,
     search_requests: 0,
-    cost_usd: Number(calcCost(promptT, cachedT, candidatesT + thoughtsT, 0).toFixed(6)),
+    cost_usd: Number(
+      calcCost(
+        promptT,
+        cachedT,
+        candidatesT + thoughtsT,
+        0,
+        EXTRACTION_PRICE,
+      ).toFixed(6),
+    ),
   };
 
   return { extraction, tokens };
@@ -685,7 +785,7 @@ If not a packaged product, set is_product to false and explain in rejection_reas
 
 async function analyzeProductDeep(
   imageBase64: string,
-  profile: HealthProfile
+  profile: HealthProfile,
 ): Promise<{ analysis: Analysis; tokens: TokenUsage }> {
   const profileText = `Dietary preferences: ${profile.dietary_preferences.join(", ") || "none"}
 Food allergies: ${profile.food_allergies.join(", ") || "none"}
@@ -729,11 +829,12 @@ Return a compatibility_level (VERY HIGH, HIGH, MEDIUM, LOW, or NONE) and a conci
   console.log(`[analyzeProductDeep] Response length: ${text.length} chars`);
 
   const usage = (result as any).usageMetadata ?? {};
-  let cachedT     = usage.cachedContentTokenCount ?? 0;
-  let promptT     = (usage.promptTokenCount ?? 0) - cachedT;
+  let cachedT = usage.cachedContentTokenCount ?? 0;
+  let promptT = (usage.promptTokenCount ?? 0) - cachedT;
   let candidatesT = usage.candidatesTokenCount ?? 0;
-  let thoughtsT   = usage.thoughtsTokenCount ?? 0;
-  let total       = usage.totalTokenCount ?? promptT + cachedT + candidatesT + thoughtsT;
+  let thoughtsT = usage.thoughtsTokenCount ?? 0;
+  let total =
+    usage.totalTokenCount ?? promptT + cachedT + candidatesT + thoughtsT;
 
   const groundingMeta = (result as any).candidates?.[0]?.groundingMetadata;
   let searches = groundingMeta?.webSearchQueries?.length ?? 0;
@@ -750,24 +851,28 @@ Return a compatibility_level (VERY HIGH, HIGH, MEDIUM, LOW, or NONE) and a conci
       config: {
         temperature: 0,
         maxOutputTokens: 4096,
-        systemInstruction: "Return ONLY valid JSON. Do not truncate. Do not include explanations.",
+        systemInstruction:
+          "Return ONLY valid JSON. Do not truncate. Do not include explanations.",
         responseMimeType: "application/json",
         responseSchema,
         tools: [{ googleSearch: {} }],
       },
     });
     const retryText = extractOutputText(retryResult);
-    if (!retryText) throw new Error("Empty response from Gemini (analyzeProductDeep retry)");
-    console.log(`[Retry] analyzeProductDeep response length: ${retryText.length} chars`);
+    if (!retryText)
+      throw new Error("Empty response from Gemini (analyzeProductDeep retry)");
+    console.log(
+      `[Retry] analyzeProductDeep response length: ${retryText.length} chars`,
+    );
     const ru = (retryResult as any).usageMetadata ?? {};
-    const ruCached  = ru.cachedContentTokenCount ?? 0;
-    cachedT     += ruCached;
-    promptT     += (ru.promptTokenCount ?? 0) - ruCached;
+    const ruCached = ru.cachedContentTokenCount ?? 0;
+    cachedT += ruCached;
+    promptT += (ru.promptTokenCount ?? 0) - ruCached;
     candidatesT += ru.candidatesTokenCount ?? 0;
-    thoughtsT   += ru.thoughtsTokenCount ?? 0;
-    total       += ru.totalTokenCount ?? 0;
+    thoughtsT += ru.thoughtsTokenCount ?? 0;
+    total += ru.totalTokenCount ?? 0;
     const rg = (retryResult as any).candidates?.[0]?.groundingMetadata;
-    searches += (rg?.webSearchQueries?.length ?? 0);
+    searches += rg?.webSearchQueries?.length ?? 0;
     analysis = parseModelJSON<Analysis>(retryText);
   }
 
@@ -778,7 +883,9 @@ Return a compatibility_level (VERY HIGH, HIGH, MEDIUM, LOW, or NONE) and a conci
     thoughts: thoughtsT,
     total,
     search_requests: searches,
-    cost_usd: Number(calcCost(promptT, cachedT, candidatesT + thoughtsT, searches).toFixed(6)),
+    cost_usd: Number(
+      calcCost(promptT, cachedT, candidatesT + thoughtsT, searches).toFixed(6),
+    ),
   };
 
   return { analysis, tokens };
@@ -786,7 +893,7 @@ Return a compatibility_level (VERY HIGH, HIGH, MEDIUM, LOW, or NONE) and a conci
 
 async function analyzeCompatibility(
   ingredients: Product["ingredients"],
-  profile: HealthProfile
+  profile: HealthProfile,
 ): Promise<{ compatibility: Compatibility; tokens: TokenUsage }> {
   const allIngredients = [
     ...(ingredients?.good ?? []),
@@ -822,7 +929,7 @@ Return a compatibility_level (VERY HIGH, HIGH, MEDIUM, LOW, or NONE) and a conci
   ];
 
   const result = await ai.models.generateContent({
-    model: MODEL,
+    model: EXTRACTION_MODEL,
     contents,
     config: {
       temperature: 0.3,
@@ -838,11 +945,12 @@ Return a compatibility_level (VERY HIGH, HIGH, MEDIUM, LOW, or NONE) and a conci
   console.log(`[analyzeCompatibility] Response length: ${text.length} chars`);
 
   const usage = (result as any).usageMetadata ?? {};
-  let cachedT     = usage.cachedContentTokenCount ?? 0;
-  let promptT     = (usage.promptTokenCount ?? 0) - cachedT;
+  let cachedT = usage.cachedContentTokenCount ?? 0;
+  let promptT = (usage.promptTokenCount ?? 0) - cachedT;
   let candidatesT = usage.candidatesTokenCount ?? 0;
-  let thoughtsT   = usage.thoughtsTokenCount ?? 0;
-  let total       = usage.totalTokenCount ?? promptT + cachedT + candidatesT + thoughtsT;
+  let thoughtsT = usage.thoughtsTokenCount ?? 0;
+  let total =
+    usage.totalTokenCount ?? promptT + cachedT + candidatesT + thoughtsT;
 
   let compatibility: Compatibility;
   try {
@@ -850,26 +958,30 @@ Return a compatibility_level (VERY HIGH, HIGH, MEDIUM, LOW, or NONE) and a conci
   } catch (err) {
     console.log(`[Retry] analyzeCompatibility — ${(err as Error).message}`);
     const retryResult = await ai.models.generateContent({
-      model: MODEL,
+      model: EXTRACTION_MODEL,
       contents,
       config: {
         temperature: 0,
         maxOutputTokens: 2048,
-        systemInstruction: "Return ONLY valid JSON. Do not truncate. Do not include explanations.",
+        systemInstruction:
+          "Return ONLY valid JSON. Do not truncate. Do not include explanations.",
         responseMimeType: "application/json",
         responseSchema: compatibilitySchema,
       },
     });
     const retryText = extractOutputText(retryResult);
-    if (!retryText) throw new Error("Empty response from Gemini (compatibility retry)");
-    console.log(`[Retry] analyzeCompatibility response length: ${retryText.length} chars`);
+    if (!retryText)
+      throw new Error("Empty response from Gemini (compatibility retry)");
+    console.log(
+      `[Retry] analyzeCompatibility response length: ${retryText.length} chars`,
+    );
     const ru = (retryResult as any).usageMetadata ?? {};
-    const ruCached  = ru.cachedContentTokenCount ?? 0;
-    cachedT     += ruCached;
-    promptT     += (ru.promptTokenCount ?? 0) - ruCached;
+    const ruCached = ru.cachedContentTokenCount ?? 0;
+    cachedT += ruCached;
+    promptT += (ru.promptTokenCount ?? 0) - ruCached;
     candidatesT += ru.candidatesTokenCount ?? 0;
-    thoughtsT   += ru.thoughtsTokenCount ?? 0;
-    total       += ru.totalTokenCount ?? 0;
+    thoughtsT += ru.thoughtsTokenCount ?? 0;
+    total += ru.totalTokenCount ?? 0;
     compatibility = parseModelJSON<Compatibility>(retryText);
   }
 
@@ -880,7 +992,15 @@ Return a compatibility_level (VERY HIGH, HIGH, MEDIUM, LOW, or NONE) and a conci
     thoughts: thoughtsT,
     total,
     search_requests: 0,
-    cost_usd: Number(calcCost(promptT, cachedT, candidatesT + thoughtsT, 0).toFixed(6)),
+    cost_usd: Number(
+      calcCost(
+        promptT,
+        cachedT,
+        candidatesT + thoughtsT,
+        0,
+        EXTRACTION_PRICE,
+      ).toFixed(6),
+    ),
   };
 
   return { compatibility, tokens };
@@ -888,7 +1008,11 @@ Return a compatibility_level (VERY HIGH, HIGH, MEDIUM, LOW, or NONE) and a conci
 
 // ─── Formatter ────────────────────────────────────────────────────────────────
 
-function formatProduct(product: Product, cacheHit: boolean, scansLeft: number): string {
+function formatProduct(
+  product: Product,
+  cacheHit: boolean,
+  scansLeft: number,
+): string {
   const { product_name, brand, health_score, ingredients } = product;
   const score = health_score ?? 0;
   const emoji = score >= 70 ? "🟢" : score >= 40 ? "🟡" : "🔴";
@@ -921,11 +1045,15 @@ function formatProduct(product: Product, cacheHit: boolean, scansLeft: number): 
 function formatCompatibility(compatibility: Compatibility): string {
   const { compatibility_level, reason } = compatibility;
   const emoji =
-    compatibility_level === "VERY HIGH" ? "🟢" :
-    compatibility_level === "HIGH"      ? "🟢" :
-    compatibility_level === "MEDIUM"    ? "🟡" :
-    compatibility_level === "LOW"       ? "🟠" :
-    "🔴";
+    compatibility_level === "VERY HIGH"
+      ? "🟢"
+      : compatibility_level === "HIGH"
+        ? "🟢"
+        : compatibility_level === "MEDIUM"
+          ? "🟡"
+          : compatibility_level === "LOW"
+            ? "🟠"
+            : "🔴";
   return `🧬 *Personal Compatibility: ${compatibility_level}* ${emoji}\n\n${reason}`.trim();
 }
 
@@ -956,7 +1084,7 @@ bot.command("resetprofile", async (ctx) => {
 
   await ctx.reply(
     "Profile reset! Let's start fresh.\n\n" + QUESTIONS[0]!.prompt,
-    { parse_mode: "Markdown" }
+    { parse_mode: "Markdown" },
   );
 });
 
@@ -972,7 +1100,7 @@ bot.on(message("text"), async (ctx) => {
     await updateUser(user);
     await ctx.reply(
       `👋 Welcome, ${ctx.from.first_name}!\n\nBefore scanning products, I need to build your *personal health profile* so I can flag ingredients that affect _you specifically_.\n\nJust *5 quick questions* — let's go!`,
-      { parse_mode: "Markdown" }
+      { parse_mode: "Markdown" },
     );
     await ctx.reply(QUESTIONS[0]!.prompt, { parse_mode: "Markdown" });
     return;
@@ -996,7 +1124,7 @@ bot.on(message("text"), async (ctx) => {
 
   await updateUser(user);
   await ctx.reply(
-    "Send me a photo of a packaged food or cosmetic product and I'll analyze its health score and ingredients for you! 📸"
+    "Send me a photo of a packaged food or cosmetic product and I'll analyze its health score and ingredients for you! 📸",
   );
 });
 
@@ -1011,7 +1139,7 @@ bot.on(message("photo"), async (ctx) => {
     await updateUser(user);
     await ctx.reply(
       `👋 Welcome, ${ctx.from.first_name}!\n\nBefore scanning products, I need to build your *personal health profile* — just *5 quick questions*!`,
-      { parse_mode: "Markdown" }
+      { parse_mode: "Markdown" },
     );
     await ctx.reply(QUESTIONS[0]!.prompt, { parse_mode: "Markdown" });
     return;
@@ -1020,7 +1148,7 @@ bot.on(message("photo"), async (ctx) => {
   // Onboarding not done
   if (!user.is_onboarded) {
     await ctx.reply(
-      "Please finish your health profile first! Answer the question below:"
+      "Please finish your health profile first! Answer the question below:",
     );
     const q = QUESTIONS[(user.onboarding_step || 1) - 1];
     if (q) await ctx.reply(q.prompt, { parse_mode: "Markdown" });
@@ -1030,7 +1158,7 @@ bot.on(message("photo"), async (ctx) => {
   // Scan limit check
   if ((user.scans_left ?? 0) <= 0) {
     await ctx.reply(
-      "You've used all your free scans. Please upgrade to continue scanning products! 🚀"
+      "You've used all your free scans. Please upgrade to continue scanning products! 🚀",
     );
     return;
   }
@@ -1039,7 +1167,9 @@ bot.on(message("photo"), async (ctx) => {
   let thinkingDeleted = false;
   const deleteThinking = async () => {
     if (!thinkingDeleted) {
-      await ctx.telegram.deleteMessage(ctx.chat.id, thinking.message_id).catch(() => {});
+      await ctx.telegram
+        .deleteMessage(ctx.chat.id, thinking.message_id)
+        .catch(() => {});
       thinkingDeleted = true;
     }
   };
@@ -1059,25 +1189,26 @@ bot.on(message("photo"), async (ctx) => {
     console.log(`[Image] ${width}x${height}, ${compressed.length}B`);
 
     const profile: HealthProfile = {
-      dietary_preferences:      user.dietary_preferences,
-      food_allergies:           user.food_allergies,
+      dietary_preferences: user.dietary_preferences,
+      food_allergies: user.food_allergies,
       ingredient_sensitivities: user.ingredient_sensitivities,
-      skin_allergies:           user.skin_allergies,
-      health_conditions:        user.health_conditions,
+      skin_allergies: user.skin_allergies,
+      health_conditions: user.health_conditions,
     };
 
     // ── Step 1: Lightweight extraction (cheap, no search) ────────────────────
-    let stageExtractionTotal    = 0;
-    let stageDeepAnalysisTotal  = 0;
+    let stageExtractionTotal = 0;
+    let stageDeepAnalysisTotal = 0;
     let stageCompatibilityTotal = 0;
 
-    const { extraction, tokens: tokensE } = await extractBasicProductInfo(imageBase64);
+    const { extraction, tokens: tokensE } =
+      await extractBasicProductInfo(imageBase64);
     stageExtractionTotal = tokensE.total;
 
     if (!extraction.is_product) {
       await deleteThinking();
       await ctx.reply(
-        `That doesn't look like a packaged product. ${extraction.rejection_reason || "Please send a photo of a food or cosmetic product."}`
+        `That doesn't look like a packaged product. ${extraction.rejection_reason || "Please send a photo of a food or cosmetic product."}`,
       );
       return;
     }
@@ -1087,22 +1218,32 @@ bot.on(message("photo"), async (ctx) => {
     let totalTokens: TokenUsage = tokensE;
     let savedCompatibility: Compatibility | null = null;
 
-    const cached = await fuzzyFindProduct(extraction.brand, extraction.product_name);
+    const cached = await fuzzyFindProduct(
+      extraction.brand,
+      extraction.product_name,
+    );
 
     if (cached) {
       product = cached;
-      console.log(`[Cache HIT] "${extraction.brand} / ${extraction.product_name}" → ${product.id}`);
+      console.log(
+        `[Cache HIT] "${extraction.brand} / ${extraction.product_name}" → ${product.id}`,
+      );
     } else {
       // ── Step 3: Deep analysis + compatibility (cache miss, single call) ────
-      console.log(`[Cache MISS] "${extraction.brand} / ${extraction.product_name}" — running deep analysis`);
-      const { analysis, tokens: tokensD } = await analyzeProductDeep(imageBase64, profile);
+      console.log(
+        `[Cache MISS] "${extraction.brand} / ${extraction.product_name}" — running deep analysis`,
+      );
+      const { analysis, tokens: tokensD } = await analyzeProductDeep(
+        imageBase64,
+        profile,
+      );
       totalTokens = combineTokens(tokensE, tokensD);
       stageDeepAnalysisTotal = tokensD.total;
 
       if (!analysis.is_product) {
         await deleteThinking();
         await ctx.reply(
-          `That doesn't look like a packaged product. ${analysis.rejection_reason || "Please send a photo of a food or cosmetic product."}`
+          `That doesn't look like a packaged product. ${analysis.rejection_reason || "Please send a photo of a food or cosmetic product."}`,
         );
         return;
       }
@@ -1119,7 +1260,9 @@ bot.on(message("photo"), async (ctx) => {
     await deleteThinking();
 
     if (!product) {
-      await ctx.reply("Sorry, I couldn't process this product. Please try again.");
+      await ctx.reply(
+        "Sorry, I couldn't process this product. Please try again.",
+      );
       return;
     }
 
@@ -1128,24 +1271,31 @@ bot.on(message("photo"), async (ctx) => {
     await updateUser(user);
 
     // Message 1: ingredient breakdown
-    await ctx.reply(formatProduct(product, !!cached, user.scans_left), { parse_mode: "Markdown" });
+    await ctx.reply(formatProduct(product, !!cached, user.scans_left), {
+      parse_mode: "Markdown",
+    });
 
     // ── Step 4: Personal compatibility ───────────────────────────────────────
     // Cache miss: already resolved above from the combined deep-analysis call.
     // Cache hit: run a dedicated compatibility call now.
     try {
       if (!savedCompatibility) {
-        const { compatibility, tokens: tokensC } = await analyzeCompatibility(product.ingredients, profile);
+        const { compatibility, tokens: tokensC } = await analyzeCompatibility(
+          product.ingredients,
+          profile,
+        );
         savedCompatibility = compatibility;
         totalTokens = combineTokens(totalTokens, tokensC);
         stageCompatibilityTotal = tokensC.total;
       }
       // Message 2: compatibility rating
-      await ctx.reply(formatCompatibility(savedCompatibility), { parse_mode: "Markdown" });
+      await ctx.reply(formatCompatibility(savedCompatibility), {
+        parse_mode: "Markdown",
+      });
     } catch (err) {
       console.error("Compatibility analysis failed:", err);
       await ctx.reply(
-        "I couldn't evaluate personal compatibility, but the ingredient analysis above is still valid."
+        "I couldn't evaluate personal compatibility, but the ingredient analysis above is still valid.",
       );
     }
 
@@ -1156,7 +1306,7 @@ bot.on(message("photo"), async (ctx) => {
       compatibility: savedCompatibility,
       tokens: totalTokens,
       token_breakdown: {
-        extraction_total:    stageExtractionTotal,
+        extraction_total: stageExtractionTotal,
         deep_analysis_total: stageDeepAnalysisTotal,
         compatibility_total: stageCompatibilityTotal,
       },
@@ -1164,7 +1314,7 @@ bot.on(message("photo"), async (ctx) => {
 
     const cacheLabel = cached ? "cache" : "deep";
     console.log(
-      `[Scan/${cacheLabel}] @${ctx.from.username ?? id} — ${product.product_name ?? "?"} by ${product.brand ?? "?"} — tokens: ${totalTokens.total}, search: ${totalTokens.search_requests ? "yes" : "no"}, cost: $${totalTokens.cost_usd}`
+      `[Scan/${cacheLabel}] @${ctx.from.username ?? id} — ${product.product_name ?? "?"} by ${product.brand ?? "?"} — tokens: ${totalTokens.total}, search: ${totalTokens.search_requests ? "yes" : "no"}, cost: $${totalTokens.cost_usd}`,
     );
   } catch (error) {
     console.error("Analysis error:", error);

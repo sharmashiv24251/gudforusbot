@@ -1025,5 +1025,1213 @@
     },
     "created_at": "2026-02-28T22:41:49.451Z",
     "source": "gemini-analysis"
+  },
+  "3c69c2a9-912f-4809-b06f-32d257e49fcf": {
+    "id": "3c69c2a9-912f-4809-b06f-32d257e49fcf",
+    "product_name": "Crisp Wafers in Dark Chocolate",
+    "brand": "Kit Kat",
+    "health_score": 35,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Chocolate",
+          "reason": "Contains cocoa solids which provide antioxidants like flavanols."
+        },
+        {
+          "name": "Cocoa Butter",
+          "reason": "A natural fat derived from cocoa beans."
+        },
+        {
+          "name": "Cocoa Processed with Alkali",
+          "reason": "Provides chocolate flavor and some mineral content, though alkalization reduces antioxidant levels."
+        }
+      ],
+      "okay": [
+        {
+          "name": "Wheat Flour",
+          "reason": "Standard refined grain used for wafer structure; low in fiber."
+        },
+        {
+          "name": "Milk Fat",
+          "reason": "Provides texture and flavor but is high in saturated fat."
+        },
+        {
+          "name": "Salt",
+          "reason": "Used in small amounts for flavor enhancement."
+        },
+        {
+          "name": "Yeast",
+          "reason": "Natural leavening agent for the wafer."
+        },
+        {
+          "name": "Baking Soda",
+          "reason": "Common leavening agent."
+        }
+      ],
+      "bad": [
+        {
+          "name": "Sugar",
+          "reason": "The primary ingredient; high consumption is linked to metabolic issues and tooth decay."
+        },
+        {
+          "name": "Vegetable Oil (Palm Oil, Palm Kernel Oil)",
+          "reason": "High in saturated fats and often associated with unsustainable sourcing."
+        },
+        {
+          "name": "Soy Lecithin",
+          "reason": "A common emulsifier that is a major allergen for those with soy sensitivities."
+        },
+        {
+          "name": "PGPR",
+          "reason": "An artificial emulsifier used as a cheaper alternative to cocoa butter; a marker of ultra-processing."
+        },
+        {
+          "name": "Artificial Flavor",
+          "reason": "Synthetic additives used to mimic natural tastes."
+        }
+      ]
+    },
+    "created_at": "2026-02-28T22:52:27.447Z",
+    "source": "gemini-analysis"
+  },
+  "736b16c0-dc64-41e3-92ae-f24d75425fc1": {
+    "id": "736b16c0-dc64-41e3-92ae-f24d75425fc1",
+    "product_name": "Turbo 25g Protein Milkshake (Chocolate)",
+    "brand": "Epigamia",
+    "health_score": 78,
+    "ingredients": {
+      "good": [],
+      "okay": [],
+      "bad": []
+    },
+    "created_at": "2026-02-28T23:07:33.442Z",
+    "source": "gemini-analysis"
+  },
+  "36a8de26-a09a-4e77-8339-bb185894c55e": {
+    "id": "36a8de26-a09a-4e77-8339-bb185894c55e",
+    "product_name": "Dairy Milk Fruit & Nut",
+    "brand": "Cadbury",
+    "health_score": 48,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Raisins",
+          "reason": "Natural dried fruit providing fiber and quick energy."
+        },
+        {
+          "name": "Almonds",
+          "reason": "Source of healthy monounsaturated fats, protein, and vitamin E."
+        },
+        {
+          "name": "Cocoa Butter",
+          "reason": "A natural vegetable fat from cocoa beans containing beneficial fatty acids."
+        },
+        {
+          "name": "Cocoa Solids",
+          "reason": "Contains polyphenols and flavonoids which have antioxidant properties."
+        }
+      ],
+      "okay": [
+        {
+          "name": "Milk Solids",
+          "reason": "Provides calcium and protein but is a highly processed dairy derivative."
+        },
+        {
+          "name": "Emulsifiers (442, 476)",
+          "reason": "Synthetic additives used for texture; generally recognized as safe but offer no nutritional value."
+        },
+        {
+          "name": "Flavours",
+          "reason": "Includes nature-identical and artificial substances for taste enhancement."
+        }
+      ],
+      "bad": [
+        {
+          "name": "Sugar",
+          "reason": "The primary ingredient; high consumption is linked to weight gain, tooth decay, and metabolic issues."
+        }
+      ]
+    },
+    "created_at": "2026-02-28T23:10:20.981Z",
+    "source": "gemini-analysis"
+  },
+  "402bff38-5d70-4542-913e-a35253f6d6cd": {
+    "id": "402bff38-5d70-4542-913e-a35253f6d6cd",
+    "product_name": "Kit Kat Dark",
+    "brand": "Kit Kat",
+    "health_score": 35,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Chocolate",
+          "reason": "Contains cocoa solids which provide some antioxidants."
+        },
+        {
+          "name": "Cocoa Butter",
+          "reason": "A natural fat derived from cocoa beans."
+        }
+      ],
+      "okay": [
+        {
+          "name": "Wheat Flour",
+          "reason": "Standard refined grain used for the wafer texture."
+        },
+        {
+          "name": "Milk Fat",
+          "reason": "Dairy-derived fat used for creaminess."
+        },
+        {
+          "name": "Lactose",
+          "reason": "Natural milk sugar."
+        },
+        {
+          "name": "Salt",
+          "reason": "Used in small amounts for flavor enhancement."
+        },
+        {
+          "name": "Yeast",
+          "reason": "Leavening agent for the wafer."
+        },
+        {
+          "name": "Baking Soda",
+          "reason": "Common leavening agent."
+        }
+      ],
+      "bad": [
+        {
+          "name": "Sugar",
+          "reason": "First ingredient; high intake is linked to metabolic issues."
+        },
+        {
+          "name": "Palm Kernel Oil / Palm Oil",
+          "reason": "High in saturated fats and often associated with environmental concerns."
+        },
+        {
+          "name": "Lecithin (Soy)",
+          "reason": "An emulsifier that is a major allergen for those with soy allergies."
+        },
+        {
+          "name": "PGPR",
+          "reason": "An artificial emulsifier used to reduce cocoa butter costs; marker of ultra-processing."
+        },
+        {
+          "name": "Vanillin / Artificial Flavor",
+          "reason": "Synthetic flavoring agents."
+        }
+      ]
+    },
+    "created_at": "2026-02-28T23:18:48.520Z",
+    "source": "gemini-analysis"
+  },
+  "710e54f3-01bb-44e7-ac0f-02ed214a31ad": {
+    "id": "710e54f3-01bb-44e7-ac0f-02ed214a31ad",
+    "product_name": "GREEK YOGURT blueberry",
+    "brand": "epigamia",
+    "health_score": 78,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Pasteurized Double Toned Milk",
+          "reason": "Excellent source of high-quality protein and calcium for bone health."
+        },
+        {
+          "name": "Blueberry Puree",
+          "reason": "Rich in antioxidants like anthocyanins which support heart and brain health."
+        },
+        {
+          "name": "Active Live Cultures",
+          "reason": "Probiotics (S. Thermophilus, L. Bulgaricus) that promote a healthy gut microbiome."
+        },
+        {
+          "name": "Lemon Juice Concentrate",
+          "reason": "A natural source of Vitamin C and acts as a natural acidity regulator."
+        }
+      ],
+      "okay": [
+        {
+          "name": "Milk Solids",
+          "reason": "Concentrated milk components used to enhance protein content and texture."
+        },
+        {
+          "name": "Pectin",
+          "reason": "A natural fruit-derived fiber used as a stabilizer; generally safe."
+        },
+        {
+          "name": "Natural Flavouring Substances",
+          "reason": "Derived from natural sources but undergo processing to extract flavor."
+        },
+        {
+          "name": "Natural Colour (Grape Skin Extract)",
+          "reason": "A plant-based pigment used for color, considered safer than synthetic dyes."
+        }
+      ],
+      "bad": [
+        {
+          "name": "Sugar",
+          "reason": "Added sugar contributes empty calories and can lead to energy spikes and crashes."
+        }
+      ]
+    },
+    "created_at": "2026-02-28T23:24:08.211Z",
+    "source": "gemini-analysis"
+  },
+  "b49cb903-9f6a-4567-95ca-3656d411758a": {
+    "id": "b49cb903-9f6a-4567-95ca-3656d411758a",
+    "product_name": "BLUE RASPBERRY HYDRATION DRINK",
+    "brand": "PRIME",
+    "health_score": 62,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Filtered Water",
+          "reason": "The primary base for hydration."
+        },
+        {
+          "name": "Coconut Water from Concentrate",
+          "reason": "Provides natural electrolytes like potassium."
+        },
+        {
+          "name": "Magnesium Citrate",
+          "reason": "A highly bioavailable form of magnesium for muscle function."
+        },
+        {
+          "name": "BCAAs (L-Isoleucine, L-Leucine, L-Valine)",
+          "reason": "Essential amino acids that support muscle recovery."
+        },
+        {
+          "name": "Vitamins (B6, B12, A, E)",
+          "reason": "Essential micronutrients for energy metabolism and immune health."
+        }
+      ],
+      "okay": [
+        {
+          "name": "Citric Acid",
+          "reason": "Common preservative and flavor enhancer, though it can be hard on tooth enamel."
+        },
+        {
+          "name": "Natural Flavor",
+          "reason": "A vague term for flavoring agents that are not chemically defined."
+        },
+        {
+          "name": "Dipotassium Phosphate",
+          "reason": "A processed source of potassium used as an electrolyte and stabilizer."
+        },
+        {
+          "name": "Gum Arabic",
+          "reason": "A natural stabilizer and thickener generally considered safe."
+        },
+        {
+          "name": "Ester Gum",
+          "reason": "A food stabilizer used to keep oils in suspension."
+        }
+      ],
+      "bad": [
+        {
+          "name": "Sucralose",
+          "reason": "An artificial sweetener that may negatively impact gut health and insulin sensitivity."
+        },
+        {
+          "name": "Acesulfame Potassium",
+          "reason": "An artificial sweetener often used in combination with sucralose; some studies suggest potential health risks."
+        }
+      ]
+    },
+    "created_at": "2026-02-28T23:30:11.807Z",
+    "source": "gemini-analysis"
+  },
+  "5118c66c-a2c0-4b6e-b916-fefd8c468991": {
+    "id": "5118c66c-a2c0-4b6e-b916-fefd8c468991",
+    "product_name": "PRIME Hydration Drink Strawberry Watermelon",
+    "brand": "PRIME",
+    "health_score": 55,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Filtered Water",
+          "reason": "Essential for hydration."
+        },
+        {
+          "name": "Coconut Water from Concentrate",
+          "reason": "Natural source of electrolytes and potassium."
+        },
+        {
+          "name": "Fruit and Vegetable Juice (for Color)",
+          "reason": "Natural coloring agent derived from sweet potato, cherry, and black carrot."
+        },
+        {
+          "name": "Vitamin B6 (Pyridoxine Hydrochloride)",
+          "reason": "Supports energy metabolism and brain health."
+        },
+        {
+          "name": "Vitamin B12 (Cyanocobalamin)",
+          "reason": "Essential for nerve function and red blood cell formation."
+        },
+        {
+          "name": "Vitamin E (D-Alpha Tocopheryl Acetate)",
+          "reason": "A powerful antioxidant that protects cells from damage."
+        }
+      ],
+      "okay": [
+        {
+          "name": "Citric Acid",
+          "reason": "Common acidulant; synthetic versions can cause digestive sensitivity in some."
+        },
+        {
+          "name": "Dipotassium Phosphate",
+          "reason": "Acts as an electrolyte and stabilizer; generally safe in moderation."
+        },
+        {
+          "name": "Trimagnesium Citrate",
+          "reason": "Source of magnesium for electrolyte balance."
+        },
+        {
+          "name": "BCAAs (L-Isoleucine, L-Leucine, L-Valine)",
+          "reason": "Amino acids that may support muscle recovery, though effectiveness in drinks is debated."
+        },
+        {
+          "name": "Gum Arabic",
+          "reason": "Natural stabilizer and thickener."
+        },
+        {
+          "name": "Glycerol Esters of Wood Rosins",
+          "reason": "Food-grade stabilizer used to keep oils suspended in water."
+        },
+        {
+          "name": "Natural Flavor",
+          "reason": "Vague term for flavorings that can include various chemical components."
+        }
+      ],
+      "bad": [
+        {
+          "name": "Sucralose",
+          "reason": "Artificial sweetener that may negatively impact gut microbiome health."
+        },
+        {
+          "name": "Acesulfame Potassium",
+          "reason": "Artificial sweetener often used with sucralose; safety for long-term use is controversial."
+        },
+        {
+          "name": "Retinyl Palmitate (Vitamin A)",
+          "reason": "Synthetic Vitamin A; this product contains a very high dose (900mcg) which can approach toxic levels if consumed excessively."
+        }
+      ]
+    },
+    "created_at": "2026-02-28T23:32:19.104Z",
+    "source": "gemini-analysis"
+  },
+  "d4fbddc2-ee15-404a-afa4-b71b387b4ba8": {
+    "id": "d4fbddc2-ee15-404a-afa4-b71b387b4ba8",
+    "product_name": "LEMONADE HYDRATION DRINK",
+    "brand": "PRIME",
+    "health_score": 48,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Filtered Water",
+          "reason": "Essential for hydration."
+        },
+        {
+          "name": "Coconut Water from Concentrate",
+          "reason": "Natural source of electrolytes like potassium."
+        },
+        {
+          "name": "L-Isoleucine, L-Leucine, L-Valine",
+          "reason": "Branched-chain amino acids (BCAAs) that may support muscle recovery."
+        },
+        {
+          "name": "Vitamin B6 & B12",
+          "reason": "Essential vitamins for energy metabolism and nervous system health."
+        }
+      ],
+      "okay": [
+        {
+          "name": "Citric Acid",
+          "reason": "Common acidulant; generally safe but can affect tooth enamel in high amounts."
+        },
+        {
+          "name": "Natural Flavor",
+          "reason": "Vague term for flavorings derived from natural sources."
+        },
+        {
+          "name": "Dipotassium Phosphate & Trimagnesium Citrate",
+          "reason": "Mineral salts used as electrolytes and stabilizers."
+        },
+        {
+          "name": "Gum Arabic & Ester Gum",
+          "reason": "Emulsifiers and stabilizers used to maintain beverage consistency."
+        },
+        {
+          "name": "Vitamin A (Retinyl Palmitate)",
+          "reason": "Provided at 100% DV per bottle; excessive intake of fat-soluble vitamins can be risky if consuming multiple bottles."
+        },
+        {
+          "name": "Beta-Carotene",
+          "reason": "Natural pigment used for color."
+        }
+      ],
+      "bad": [
+        {
+          "name": "Sucralose",
+          "reason": "Artificial sweetener that may negatively impact gut microbiome health."
+        },
+        {
+          "name": "Acesulfame Potassium",
+          "reason": "Artificial sweetener often used with sucralose; some concerns regarding long-term metabolic effects."
+        }
+      ]
+    },
+    "created_at": "2026-02-28T23:33:47.105Z",
+    "source": "gemini-analysis"
+  },
+  "f58860b1-b021-40c4-9cb2-0115e0958423": {
+    "id": "f58860b1-b021-40c4-9cb2-0115e0958423",
+    "product_name": "LEMON LIME HYDRATION DRINK",
+    "brand": "PRIME",
+    "health_score": 45,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Coconut Water from Concentrate",
+          "reason": "Provides natural electrolytes and hydration."
+        },
+        {
+          "name": "L-Isoleucine, L-Leucine, L-Valine",
+          "reason": "Branched-chain amino acids (BCAAs) that support muscle recovery."
+        },
+        {
+          "name": "Vitamin B6 & B12",
+          "reason": "Essential for energy metabolism and nervous system health."
+        },
+        {
+          "name": "Vitamin A (Retinyl Palmitate)",
+          "reason": "Supports immune function and vision."
+        }
+      ],
+      "okay": [
+        {
+          "name": "Citric Acid",
+          "reason": "Common preservative and acidulant, generally safe but can affect tooth enamel."
+        },
+        {
+          "name": "Dipotassium Phosphate & Trimagnesium Citrate",
+          "reason": "Mineral salts used as electrolytes; beneficial for hydration but highly processed."
+        },
+        {
+          "name": "Natural Flavor",
+          "reason": "Vague term for flavoring agents; better than artificial but source is undisclosed."
+        },
+        {
+          "name": "Beta Carotene",
+          "reason": "A natural pigment and antioxidant used for color."
+        }
+      ],
+      "bad": [
+        {
+          "name": "Sucralose",
+          "reason": "Artificial sweetener that may negatively impact gut microbiome health."
+        },
+        {
+          "name": "Acesulfame Potassium",
+          "reason": "Artificial sweetener often used with sucralose; some studies suggest potential metabolic concerns."
+        }
+      ]
+    },
+    "created_at": "2026-02-28T23:35:45.321Z",
+    "source": "gemini-analysis"
+  },
+  "c1fa2258-a511-4349-84c7-d14c0ab5d898": {
+    "id": "c1fa2258-a511-4349-84c7-d14c0ab5d898",
+    "product_name": "Hydration Drink (Ice Pop)",
+    "brand": "PRIME",
+    "health_score": 60,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Filtered Water",
+          "reason": "Essential for hydration and the primary base of the drink."
+        },
+        {
+          "name": "Coconut Water from Concentrate",
+          "reason": "Provides natural electrolytes like potassium for hydration."
+        },
+        {
+          "name": "L-Isoleucine",
+          "reason": "An essential branched-chain amino acid (BCAA) that supports muscle recovery."
+        },
+        {
+          "name": "L-Leucine",
+          "reason": "A BCAA critical for protein synthesis and muscle repair."
+        },
+        {
+          "name": "L-Valine",
+          "reason": "A BCAA that helps prevent muscle breakdown during exercise."
+        },
+        {
+          "name": "D-Alpha Tocopheryl Acetate (Vitamin E)",
+          "reason": "An antioxidant that protects cells from oxidative stress."
+        },
+        {
+          "name": "Retinyl Palmitate (Vitamin A)",
+          "reason": "Supports immune function and healthy vision."
+        },
+        {
+          "name": "Pyridoxine Hydrochloride (Vitamin B-6)",
+          "reason": "Essential for energy metabolism and brain health."
+        },
+        {
+          "name": "Cyanocobalamin (Vitamin B-12)",
+          "reason": "Supports red blood cell formation and nerve function."
+        }
+      ],
+      "okay": [
+        {
+          "name": "Citric Acid",
+          "reason": "A common acidulant used for flavor and preservation, generally safe."
+        },
+        {
+          "name": "Dipotassium Phosphate",
+          "reason": "A mineral salt used as a stabilizer and source of potassium."
+        },
+        {
+          "name": "Trimagnesium Citrate",
+          "reason": "A source of magnesium used to balance electrolytes."
+        },
+        {
+          "name": "Natural Flavor",
+          "reason": "A vague term for flavors derived from natural sources; quality can vary."
+        }
+      ],
+      "bad": [
+        {
+          "name": "Sucralose",
+          "reason": "An artificial sweetener that may negatively impact gut microbiome health."
+        },
+        {
+          "name": "Acesulfame Potassium",
+          "reason": "An artificial sweetener often used in combination with sucralose; some studies suggest potential health risks with high consumption."
+        }
+      ]
+    },
+    "created_at": "2026-02-28T23:37:05.993Z",
+    "source": "gemini-analysis"
+  },
+  "c5c743de-7f3b-46a1-823a-a9e3a68fcda4": {
+    "id": "c5c743de-7f3b-46a1-823a-a9e3a68fcda4",
+    "product_name": "Cherry Limeade Energy Drink",
+    "brand": "PRIME",
+    "health_score": 45,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Coconut Water from Concentrate",
+          "reason": "Provides a small amount of natural electrolytes for hydration."
+        },
+        {
+          "name": "Vitamin B6 (Pyridoxine Hydrochloride)",
+          "reason": "Supports energy metabolism and brain health."
+        },
+        {
+          "name": "Vitamin B12 (Cyanocobalamin)",
+          "reason": "Essential for nerve function and red blood cell formation."
+        },
+        {
+          "name": "L-Theanine",
+          "reason": "An amino acid that promotes focus and helps mitigate caffeine jitters."
+        },
+        {
+          "name": "Trimagnesium Citrate",
+          "reason": "A highly bioavailable source of magnesium for muscle and nerve function."
+        },
+        {
+          "name": "Potassium Citrate",
+          "reason": "An essential electrolyte for heart health and fluid balance."
+        }
+      ],
+      "okay": [
+        {
+          "name": "Carbonated Water",
+          "reason": "Standard calorie-free base for carbonated beverages."
+        },
+        {
+          "name": "Citric Acid",
+          "reason": "Common acidity regulator and preservative."
+        },
+        {
+          "name": "Sodium Citrate",
+          "reason": "Acts as a buffer and electrolyte source."
+        },
+        {
+          "name": "Calcium Lactate",
+          "reason": "A source of calcium that also helps with hydration."
+        },
+        {
+          "name": "Natural Flavors",
+          "reason": "Generally safe, though the specific sources are not disclosed."
+        },
+        {
+          "name": "Inositol",
+          "reason": "A sugar-like compound that may support mental wellness."
+        },
+        {
+          "name": "Taurine",
+          "reason": "An amino acid common in energy drinks; safe in moderate amounts."
+        },
+        {
+          "name": "Glucuronolactone",
+          "reason": "A naturally occurring chemical often used to improve alertness."
+        }
+      ],
+      "bad": [
+        {
+          "name": "Caffeine",
+          "reason": "Contains 200mg per can, which is very high and can cause anxiety or heart palpitations."
+        },
+        {
+          "name": "Sucralose",
+          "reason": "An artificial sweetener that may negatively impact gut microbiome health."
+        },
+        {
+          "name": "Acesulfame Potassium",
+          "reason": "An artificial sweetener often used in combination with sucralose; long-term health effects are debated."
+        },
+        {
+          "name": "Sodium Benzoate",
+          "reason": "A synthetic preservative that some people prefer to avoid."
+        },
+        {
+          "name": "Potassium Sorbate",
+          "reason": "A common synthetic preservative used to maintain freshness."
+        }
+      ]
+    },
+    "created_at": "2026-02-28T23:39:08.009Z",
+    "source": "gemini-analysis"
+  },
+  "80ed9034-4d15-40db-90da-795c3f1d7bd9": {
+    "id": "80ed9034-4d15-40db-90da-795c3f1d7bd9",
+    "product_name": "Hydration Drink (Lakers Edition)",
+    "brand": "PRIME",
+    "health_score": 68,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Filtered Water",
+          "reason": "The fundamental base for hydration."
+        },
+        {
+          "name": "Coconut Water from Concentrate",
+          "reason": "A natural source of electrolytes like potassium."
+        },
+        {
+          "name": "L-Isoleucine, L-Leucine, L-Valine",
+          "reason": "Branched-chain amino acids (BCAAs) that assist in muscle recovery."
+        },
+        {
+          "name": "Vitamins (B6, B12, E)",
+          "reason": "Essential micronutrients that support energy metabolism and provide antioxidant benefits."
+        }
+      ],
+      "okay": [
+        {
+          "name": "Citric Acid",
+          "reason": "A common preservative and flavor enhancer, though often manufactured synthetically."
+        },
+        {
+          "name": "Dipotassium Phosphate",
+          "reason": "Acts as a stabilizer and provides a source of potassium."
+        },
+        {
+          "name": "Trimagnesium Citrate",
+          "reason": "A bioavailable source of magnesium for muscle and nerve function."
+        },
+        {
+          "name": "Natural Flavoring",
+          "reason": "Derived from natural sources, though the specific components are not disclosed."
+        },
+        {
+          "name": "Gum Arabic",
+          "reason": "A natural stabilizer and thickener derived from acacia trees."
+        },
+        {
+          "name": "Beta-Carotene",
+          "reason": "A natural pigment used for color that also serves as a precursor to Vitamin A."
+        }
+      ],
+      "bad": [
+        {
+          "name": "Sucralose",
+          "reason": "An artificial sweetener that may disrupt gut microbiome health in some individuals."
+        },
+        {
+          "name": "Acesulfame Potassium",
+          "reason": "A synthetic sweetener often used to mask the aftertaste of other sweeteners; safety is debated for long-term use."
+        },
+        {
+          "name": "Ester Gum",
+          "reason": "A synthetic food additive used as a stabilizer to keep oils suspended in water."
+        }
+      ]
+    },
+    "created_at": "2026-02-28T23:40:35.142Z",
+    "source": "gemini-analysis"
+  },
+  "36824574-3a21-4471-9ff8-36270b9d8d26": {
+    "id": "36824574-3a21-4471-9ff8-36270b9d8d26",
+    "product_name": "Turbo+ 30g Protein Milkshake (Malai Kulfi)",
+    "brand": "Epigamia",
+    "health_score": 82,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Skimmed Milk",
+          "reason": "An excellent source of high-quality protein and calcium with minimal fat."
+        },
+        {
+          "name": "BCAA (Branched Chain Amino Acids)",
+          "reason": "Essential amino acids that support muscle protein synthesis and post-workout recovery."
+        }
+      ],
+      "okay": [
+        {
+          "name": "Milk Solids",
+          "reason": "A processed source of milk protein used to boost the nutritional profile."
+        },
+        {
+          "name": "Water",
+          "reason": "Used as a base for consistency; neutral health impact."
+        },
+        {
+          "name": "Nature Identical Flavouring Substances (Malai Kulfi)",
+          "reason": "Chemically identical to natural flavors but produced in a lab; generally safe."
+        },
+        {
+          "name": "Acidity Regulators (INS 340, INS 452, INS 339(ii))",
+          "reason": "Common food additives used to maintain pH and product stability."
+        },
+        {
+          "name": "Edible Common Salt",
+          "reason": "Used for flavor and as an electrolyte, though sodium intake should be monitored."
+        }
+      ],
+      "bad": [
+        {
+          "name": "Sucralose (INS 955)",
+          "reason": "An artificial sweetener; while approved, some users prefer to avoid synthetic sugar substitutes."
+        },
+        {
+          "name": "Stabilizer (INS 407 / Carrageenan)",
+          "reason": "A thickener that some studies suggest may cause digestive sensitivity or inflammation in certain individuals."
+        }
+      ]
+    },
+    "created_at": "2026-03-01T00:03:57.450Z",
+    "source": "gemini-analysis"
+  },
+  "4f59e6ea-7e59-48ff-9330-67941b9c1751": {
+    "id": "4f59e6ea-7e59-48ff-9330-67941b9c1751",
+    "product_name": "Strawberry Crème Protein Wafer",
+    "brand": "SUPERYOU",
+    "health_score": 68,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Fermented Nutritional Yeast Protein",
+          "reason": "A complete, highly digestible protein source containing all 9 essential amino acids."
+        },
+        {
+          "name": "Coconut Oil",
+          "reason": "A healthier alternative to palm oil, containing medium-chain triglycerides (MCTs)."
+        },
+        {
+          "name": "Sesame Oil",
+          "reason": "Contains healthy unsaturated fats and antioxidants."
+        },
+        {
+          "name": "Natural Food Colour (INS 162)",
+          "reason": "Derived from beetroot, a safe and natural coloring agent."
+        }
+      ],
+      "okay": [
+        {
+          "name": "Maltitol (INS 965)",
+          "reason": "A sugar alcohol that provides sweetness without added sugar, though it may cause digestive discomfort in some."
+        },
+        {
+          "name": "Refined Wheat Flour (Maida)",
+          "reason": "Processed flour with low fiber and nutrient content."
+        },
+        {
+          "name": "Milk Solids",
+          "reason": "Provides protein and calcium but is a processed dairy derivative."
+        },
+        {
+          "name": "Starch / Modified Starch",
+          "reason": "Used for texture; provides empty calories and is highly processed."
+        },
+        {
+          "name": "Nature Identical Flavouring Substances (Strawberry)",
+          "reason": "Chemically identical to natural flavors but synthesized in a lab."
+        },
+        {
+          "name": "Edible Common Salt",
+          "reason": "Standard seasoning, should be consumed in moderation."
+        },
+        {
+          "name": "Improver Enzyme",
+          "reason": "Used to improve dough texture; generally safe but highly processed."
+        }
+      ],
+      "bad": [
+        {
+          "name": "Hydrogenated Vegetable Oils",
+          "reason": "Processing can create trans fats, which are linked to heart health issues."
+        },
+        {
+          "name": "Soy Lecithin (INS 322)",
+          "reason": "A common emulsifier that is a major allergen for individuals with soy allergies."
+        },
+        {
+          "name": "Artificial Flavour (Ethyl Vanillin)",
+          "reason": "Synthetic flavoring agent with no nutritional value."
+        },
+        {
+          "name": "PGPR (INS 476)",
+          "reason": "A synthetic emulsifier used to reduce viscosity, often found in low-quality chocolates."
+        }
+      ]
+    },
+    "created_at": "2026-03-01T00:04:56.584Z",
+    "source": "gemini-analysis"
+  },
+  "dec0d93b-f7bd-4ac6-abce-8e907643d4fc": {
+    "id": "dec0d93b-f7bd-4ac6-abce-8e907643d4fc",
+    "product_name": "Swiss Milk Chocolate with Honey & Almond Nougat",
+    "brand": "Toblerone",
+    "health_score": 42,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Almonds",
+          "reason": "Source of healthy monounsaturated fats and fiber."
+        },
+        {
+          "name": "Honey",
+          "reason": "A natural sweetener that provides trace enzymes and antioxidants."
+        },
+        {
+          "name": "Cocoa Butter",
+          "reason": "A natural vegetable fat containing healthy fatty acids like stearic acid."
+        },
+        {
+          "name": "Cocoa Mass",
+          "reason": "Contains flavonoids and antioxidants beneficial for heart health."
+        }
+      ],
+      "okay": [
+        {
+          "name": "Whole Milk Powder",
+          "reason": "Provides calcium and protein but is a processed dairy product."
+        },
+        {
+          "name": "Milk Fat",
+          "reason": "Contributes to the creamy texture but is high in saturated fat."
+        },
+        {
+          "name": "Egg Whites",
+          "reason": "Used for the nougat texture; a source of protein but present in very small amounts."
+        }
+      ],
+      "bad": [
+        {
+          "name": "Sugar",
+          "reason": "The primary ingredient; high consumption is linked to metabolic issues and tooth decay."
+        },
+        {
+          "name": "Soy Lecithin",
+          "reason": "An emulsifier and a common allergen; often derived from genetically modified soy."
+        },
+        {
+          "name": "Vanillin",
+          "reason": "An artificial flavoring agent used as a cheaper alternative to natural vanilla."
+        },
+        {
+          "name": "Invert Sugar",
+          "reason": "An additional highly processed liquid sugar used to maintain moisture."
+        }
+      ]
+    },
+    "created_at": "2026-03-01T00:09:22.836Z",
+    "source": "gemini-analysis"
+  },
+  "08faf1a1-ebf4-4678-9bfd-65d28362a708": {
+    "id": "08faf1a1-ebf4-4678-9bfd-65d28362a708",
+    "product_name": "Multigrain Energy Bar - Nuts and Seeds",
+    "brand": "Yoga Bar",
+    "health_score": 88,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Brown Rice",
+          "reason": "A whole grain that provides complex carbohydrates and dietary fiber."
+        },
+        {
+          "name": "Millets (Saamai, Foxtail)",
+          "reason": "Nutrient-dense ancient grains rich in minerals and fiber."
+        },
+        {
+          "name": "Rolled Oats",
+          "reason": "High in beta-glucan fiber, which supports heart health and digestion."
+        },
+        {
+          "name": "Seeds (Sunflower, Sesame, Chia)",
+          "reason": "Excellent sources of healthy fats, Omega-3s, and essential minerals."
+        },
+        {
+          "name": "Almonds",
+          "reason": "Provides high-quality plant protein, healthy monounsaturated fats, and Vitamin E."
+        },
+        {
+          "name": "Dates",
+          "reason": "A whole-food sweetener that adds natural fiber and potassium."
+        },
+        {
+          "name": "Cinnamon",
+          "reason": "A natural spice with antioxidant and anti-inflammatory properties."
+        },
+        {
+          "name": "Rosemary Extract",
+          "reason": "A natural antioxidant used to maintain freshness without artificial preservatives."
+        }
+      ],
+      "okay": [
+        {
+          "name": "Honey",
+          "reason": "A natural sweetener, but still contributes to the total sugar content."
+        },
+        {
+          "name": "Palm Sugar",
+          "reason": "An unrefined sugar source, but should still be consumed in moderation."
+        },
+        {
+          "name": "Rice Crispies",
+          "reason": "A processed grain component that is less nutrient-dense than whole grains."
+        },
+        {
+          "name": "Peanut Protein Powder",
+          "reason": "A processed protein source used to boost the bar's protein content."
+        },
+        {
+          "name": "Vanilla Extract",
+          "reason": "A natural flavoring agent, generally considered safe."
+        }
+      ],
+      "bad": []
+    },
+    "created_at": "2026-03-01T00:26:20.127Z",
+    "source": "gemini-analysis"
+  },
+  "22f0cca4-4021-45e3-8fe4-0232b334869d": {
+    "id": "22f0cca4-4021-45e3-8fe4-0232b334869d",
+    "product_name": "Moisturising Baby Oil",
+    "brand": "Cetaphil",
+    "health_score": 88,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Helianthus Annuus (Sunflower) Seed Oil",
+          "reason": "A lightweight, non-comedogenic oil rich in Vitamin E and essential fatty acids that helps maintain the skin barrier."
+        },
+        {
+          "name": "Prunus Amygdalus Dulcis (Sweet Almond) Oil",
+          "reason": "A gentle emollient that nourishes and softens delicate skin."
+        },
+        {
+          "name": "Simmondsia Chinensis (Jojoba) Seed Oil",
+          "reason": "Closely mimics natural skin oils, providing deep hydration without clogging pores."
+        },
+        {
+          "name": "Calendula Officinalis Flower Extract",
+          "reason": "Known for its soothing and anti-inflammatory properties, ideal for sensitive baby skin."
+        },
+        {
+          "name": "Tocopherol (Vitamin E)",
+          "reason": "A natural antioxidant that protects the skin and helps preserve the product's oils."
+        }
+      ],
+      "okay": [
+        {
+          "name": "Parfum (Fragrance)",
+          "reason": "Added for scent; while generally safe, it can be a potential irritant for some babies or those with extremely sensitive skin."
+        }
+      ],
+      "bad": [
+        {
+          "name": "Glycine Soja (Soybean) Oil",
+          "reason": "While a good emollient for most, it is a direct allergen for individuals with soy allergies."
+        }
+      ]
+    },
+    "created_at": "2026-03-01T00:30:35.532Z",
+    "source": "gemini-analysis"
+  },
+  "f0420136-8a26-4bd2-be2b-9206a2cad2d0": {
+    "id": "f0420136-8a26-4bd2-be2b-9206a2cad2d0",
+    "product_name": "Ultra",
+    "brand": "Monster Energy",
+    "health_score": 45,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Niacinamide (Vitamin B3)",
+          "reason": "Essential vitamin for energy metabolism and skin health."
+        },
+        {
+          "name": "D-Calcium Pantothenate (Vitamin B5)",
+          "reason": "Supports energy production and hormone synthesis."
+        },
+        {
+          "name": "Pyridoxine Hydrochloride (Vitamin B6)",
+          "reason": "Important for brain development and immune function."
+        },
+        {
+          "name": "Cyanocobalamin (Vitamin B12)",
+          "reason": "Crucial for nerve tissue health and red blood cell production."
+        },
+        {
+          "name": "Taurine",
+          "reason": "An amino acid that supports neurological development and mineral balance."
+        },
+        {
+          "name": "L-Carnitine L-Tartrate",
+          "reason": "Helps the body turn fat into energy."
+        },
+        {
+          "name": "Inositol",
+          "reason": "A carbohydrate that plays a role in cell signaling and fat metabolism."
+        }
+      ],
+      "okay": [
+        {
+          "name": "Carbonated Water",
+          "reason": "Standard base for soft drinks; neutral impact."
+        },
+        {
+          "name": "Citric Acid",
+          "reason": "Common acidity regulator; generally safe."
+        },
+        {
+          "name": "Erythritol",
+          "reason": "A sugar alcohol that is low calorie, though high amounts can cause digestive upset."
+        },
+        {
+          "name": "Sodium Citrate",
+          "reason": "Used as a buffer and flavor enhancer."
+        },
+        {
+          "name": "Panax Ginseng Root Extract",
+          "reason": "Herbal extract often used for energy, though quantity is usually low."
+        },
+        {
+          "name": "Natural Flavors",
+          "reason": "Derived from natural sources but processed."
+        },
+        {
+          "name": "Salt",
+          "reason": "Used for flavor balance; intake should be monitored."
+        },
+        {
+          "name": "Guarana Seed Extract",
+          "reason": "Natural source of caffeine."
+        },
+        {
+          "name": "D-Glucuronolactone",
+          "reason": "Naturally occurring chemical found in connective tissue, used for energy."
+        }
+      ],
+      "bad": [
+        {
+          "name": "Artificial Flavors",
+          "reason": "Chemically synthesized flavorings."
+        },
+        {
+          "name": "Caffeine",
+          "reason": "High levels can cause jitters, heart palpitations, and sleep disruption."
+        },
+        {
+          "name": "Sucralose",
+          "reason": "Artificial sweetener that may negatively impact gut microbiome."
+        },
+        {
+          "name": "Acesulfame Potassium",
+          "reason": "Artificial sweetener often used with sucralose; long-term health effects are debated."
+        },
+        {
+          "name": "Sorbic Acid",
+          "reason": "Synthetic preservative used to prevent mold growth."
+        },
+        {
+          "name": "Benzoic Acid",
+          "reason": "Synthetic preservative; can be irritating to some individuals."
+        }
+      ]
+    },
+    "created_at": "2026-03-01T00:41:47.236Z",
+    "source": "gemini-analysis"
+  },
+  "d895a017-33e2-404a-b9a8-cf72594a5b4c": {
+    "id": "d895a017-33e2-404a-b9a8-cf72594a5b4c",
+    "product_name": "Greek Yogurt Smoothie (Alphonso Mango)",
+    "brand": "Epigamia",
+    "health_score": 72,
+    "ingredients": {
+      "good": [
+        {
+          "name": "Yogurt",
+          "reason": "Rich in protein and contains live probiotic cultures for gut health."
+        },
+        {
+          "name": "Alphonso Mango Puree",
+          "reason": "Natural fruit source providing vitamins and flavor."
+        },
+        {
+          "name": "Water",
+          "reason": "Essential for hydration and product consistency."
+        },
+        {
+          "name": "Permitted Starter Cultures",
+          "reason": "Beneficial bacteria (S. Thermophilus, L. Bulgaricus) that aid digestion."
+        }
+      ],
+      "okay": [
+        {
+          "name": "Pectin (INS 440)",
+          "reason": "A natural fruit-derived fiber used as a stabilizer; generally safe."
+        },
+        {
+          "name": "Citric Acid (INS 330)",
+          "reason": "A common acidity regulator derived from citrus fruits."
+        },
+        {
+          "name": "Natural Flavouring Substance",
+          "reason": "Derived from natural sources but less transparent than whole ingredients."
+        },
+        {
+          "name": "Natural Colouring Substance (INS 160a(ii))",
+          "reason": "Beta-carotene derived from plants, used for color."
+        },
+        {
+          "name": "Enzyme (β-galactosidase)",
+          "reason": "Used to make the product lactose-free; safe for consumption."
+        }
+      ],
+      "bad": [
+        {
+          "name": "Sugar",
+          "reason": "Added refined sugar increases calorie density and can impact blood glucose levels."
+        }
+      ]
+    },
+    "created_at": "2026-03-01T00:50:33.351Z",
+    "source": "gemini-analysis"
   }
 }

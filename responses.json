@@ -495,6 +495,420 @@
           "deep_analysis_total": 3930,
           "compatibility_total": 0
         }
+      },
+      {
+        "timestamp": "2026-03-01T00:27:11.150Z",
+        "product_id": "08faf1a1-ebf4-4678-9bfd-65d28362a708",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "VERY HIGH",
+          "reason": "The product contains no soy or animal-derived ingredients that conflict with an eggetarian diet, and all listed ingredients are safe for the user's specified profile."
+        },
+        "tokens": {
+          "prompt": 1359,
+          "cached": 0,
+          "candidates": 78,
+          "thoughts": 863,
+          "total": 2300,
+          "search_requests": 0,
+          "cost_usd": 0.003502
+        },
+        "token_breakdown": {
+          "extraction_total": 1561,
+          "deep_analysis_total": 0,
+          "compatibility_total": 739
+        }
+      },
+      {
+        "timestamp": "2026-03-01T00:29:36.267Z",
+        "product_id": "08faf1a1-ebf4-4678-9bfd-65d28362a708",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "VERY HIGH",
+          "reason": "All ingredients are compatible with an eggetarian diet and do not contain soy or lead, aligning perfectly with your dietary preferences, allergies, and sensitivities."
+        },
+        "tokens": {
+          "prompt": 553,
+          "cached": 0,
+          "candidates": 83,
+          "thoughts": 473,
+          "total": 1109,
+          "search_requests": 0,
+          "cost_usd": 0.000417
+        },
+        "token_breakdown": {
+          "extraction_total": 554,
+          "deep_analysis_total": 0,
+          "compatibility_total": 555
+        }
+      },
+      {
+        "timestamp": "2026-03-01T00:30:06.574Z",
+        "product_id": "c5c743de-7f3b-46a1-823a-a9e3a68fcda4",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "HIGH",
+          "reason": "Based on the provided ingredient list, there are no direct conflicts with your eggetarian dietary preferences or soy allergy. Your sensitivity to lead cannot be assessed from the ingredient list alone as it is a contaminant, not an ingredient."
+        },
+        "tokens": {
+          "prompt": 599,
+          "cached": 0,
+          "candidates": 101,
+          "thoughts": 837,
+          "total": 1537,
+          "search_requests": 0,
+          "cost_usd": 0.000652
+        },
+        "token_breakdown": {
+          "extraction_total": 523,
+          "deep_analysis_total": 0,
+          "compatibility_total": 1014
+        }
+      },
+      {
+        "timestamp": "2026-03-01T00:30:36.955Z",
+        "product_id": "22f0cca4-4021-45e3-8fe4-0232b334869d",
+        "cache_hit": false,
+        "compatibility": {
+          "compatibility_level": "NONE",
+          "reason": "The product contains Glycine Soja (Soybean) Oil, which is a critical conflict for the user's documented soy allergy."
+        },
+        "tokens": {
+          "prompt": 1497,
+          "cached": 378,
+          "candidates": 496,
+          "thoughts": 1896,
+          "total": 4267,
+          "search_requests": 2,
+          "cost_usd": 0.07709
+        },
+        "token_breakdown": {
+          "extraction_total": 664,
+          "deep_analysis_total": 3603,
+          "compatibility_total": 0
+        }
+      },
+      {
+        "timestamp": "2026-03-01T00:30:54.156Z",
+        "product_id": "710e54f3-01bb-44e7-ac0f-02ed214a31ad",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "VERY HIGH",
+          "reason": "The ingredients are fully compatible with your eggetarian diet and do not contain soy or lead, which are your specified allergies and sensitivities."
+        },
+        "tokens": {
+          "prompt": 538,
+          "cached": 0,
+          "candidates": 76,
+          "thoughts": 394,
+          "total": 1008,
+          "search_requests": 0,
+          "cost_usd": 0.000363
+        },
+        "token_breakdown": {
+          "extraction_total": 575,
+          "deep_analysis_total": 0,
+          "compatibility_total": 433
+        }
+      },
+      {
+        "timestamp": "2026-03-01T00:33:22.773Z",
+        "product_id": "de42d933-7f66-4fb8-b0cb-6baacf452826",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "VERY HIGH",
+          "reason": "The product ingredients do not contain soy or lead, aligning with your food allergies and ingredient sensitivities. Your dietary preferences, skin sensitivities, and health conditions are not impacted by these topical ingredients."
+        },
+        "tokens": {
+          "prompt": 603,
+          "cached": 0,
+          "candidates": 90,
+          "thoughts": 660,
+          "total": 1353,
+          "search_requests": 0,
+          "cost_usd": 0.00054
+        },
+        "token_breakdown": {
+          "extraction_total": 496,
+          "deep_analysis_total": 0,
+          "compatibility_total": 857
+        }
+      },
+      {
+        "timestamp": "2026-03-01T00:35:13.812Z",
+        "product_id": "4ffeca96-92c2-40d6-bade-cc46e129e7af",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "HIGH",
+          "reason": "The ingredients are compatible with your eggetarian diet and soy allergy. KSM-66 Ashwagandha is a high-quality extract typically tested for heavy metals, making it likely suitable for your lead sensitivity."
+        },
+        "tokens": {
+          "prompt": 505,
+          "cached": 0,
+          "candidates": 107,
+          "thoughts": 1734,
+          "total": 2346,
+          "search_requests": 0,
+          "cost_usd": 0.001181
+        },
+        "token_breakdown": {
+          "extraction_total": 985,
+          "deep_analysis_total": 0,
+          "compatibility_total": 1361
+        }
+      },
+      {
+        "timestamp": "2026-03-01T00:35:41.460Z",
+        "product_id": "89e88442-412e-4c33-8540-e4ed8de6b312",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "LOW",
+          "reason": "The product contains Salmon Fish Oil, EPA, DHA, and Gelatin, which are not compatible with an eggetarian dietary preference."
+        },
+        "tokens": {
+          "prompt": 600,
+          "cached": 0,
+          "candidates": 78,
+          "thoughts": 775,
+          "total": 1453,
+          "search_requests": 0,
+          "cost_usd": 0.000602
+        },
+        "token_breakdown": {
+          "extraction_total": 602,
+          "deep_analysis_total": 0,
+          "compatibility_total": 851
+        }
+      },
+      {
+        "timestamp": "2026-03-01T00:36:16.124Z",
+        "product_id": "89e88442-412e-4c33-8540-e4ed8de6b312",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "NONE",
+          "reason": "The product contains Salmon Fish Oil, EPA, DHA, and potentially animal-derived Gelatin and Glycerol, which are incompatible with an eggetarian diet."
+        },
+        "tokens": {
+          "prompt": 600,
+          "cached": 0,
+          "candidates": 83,
+          "thoughts": 887,
+          "total": 1570,
+          "search_requests": 0,
+          "cost_usd": 0.000672
+        },
+        "token_breakdown": {
+          "extraction_total": 913,
+          "deep_analysis_total": 0,
+          "compatibility_total": 657
+        }
+      },
+      {
+        "timestamp": "2026-03-01T00:37:38.038Z",
+        "product_id": "df6cfaa8-1c7e-4ecb-a066-e37c766b03d8",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "VERY HIGH",
+          "reason": "The ingredients KSM-66 Ashwagandha and HPMC Capsule Shell are suitable for an eggetarian diet, do not contain soy, and are not known to inherently contain lead. The user has no health conditions or skin sensitivities."
+        },
+        "tokens": {
+          "prompt": 503,
+          "cached": 0,
+          "candidates": 95,
+          "thoughts": 1009,
+          "total": 1607,
+          "search_requests": 0,
+          "cost_usd": 0.000738
+        },
+        "token_breakdown": {
+          "extraction_total": 591,
+          "deep_analysis_total": 0,
+          "compatibility_total": 1016
+        }
+      },
+      {
+        "timestamp": "2026-03-01T00:39:08.561Z",
+        "product_id": "710e54f3-01bb-44e7-ac0f-02ed214a31ad",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "VERY HIGH",
+          "reason": "All ingredients are compatible with an eggetarian diet, and there is no soy or lead present, aligning perfectly with your dietary preferences, allergies, and sensitivities."
+        },
+        "tokens": {
+          "prompt": 538,
+          "cached": 0,
+          "candidates": 76,
+          "thoughts": 578,
+          "total": 1192,
+          "search_requests": 0,
+          "cost_usd": 0.000474
+        },
+        "token_breakdown": {
+          "extraction_total": 720,
+          "deep_analysis_total": 0,
+          "compatibility_total": 472
+        }
+      },
+      {
+        "timestamp": "2026-03-01T00:40:30.975Z",
+        "product_id": "710e54f3-01bb-44e7-ac0f-02ed214a31ad",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "VERY HIGH",
+          "reason": "The product contains no meat, soy, or lead-related ingredients, making it fully compatible with an eggetarian diet and the user's soy allergy."
+        },
+        "tokens": {
+          "prompt": 1344,
+          "cached": 0,
+          "candidates": 69,
+          "thoughts": 1208,
+          "total": 2621,
+          "search_requests": 0,
+          "cost_usd": 0.004504
+        },
+        "token_breakdown": {
+          "extraction_total": 1906,
+          "deep_analysis_total": 0,
+          "compatibility_total": 715
+        }
+      },
+      {
+        "timestamp": "2026-03-01T00:41:32.856Z",
+        "product_id": "409f55df-bb59-4bec-82d2-fdfc41f5f3b7",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "VERY HIGH",
+          "reason": "The product contains no soy-based ingredients or animal-derived meats, making it safe for the user's soy allergy and eggetarian diet. No lead or other restricted substances are present."
+        },
+        "tokens": {
+          "prompt": 1448,
+          "cached": 0,
+          "candidates": 77,
+          "thoughts": 877,
+          "total": 2402,
+          "search_requests": 0,
+          "cost_usd": 0.003585
+        },
+        "token_breakdown": {
+          "extraction_total": 1457,
+          "deep_analysis_total": 0,
+          "compatibility_total": 945
+        }
+      },
+      {
+        "timestamp": "2026-03-01T00:41:48.664Z",
+        "product_id": "f0420136-8a26-4bd2-be2b-9206a2cad2d0",
+        "cache_hit": false,
+        "compatibility": {
+          "compatibility_level": "VERY HIGH",
+          "reason": "The product is vegan/vegetarian (compatible with eggetarian diet), contains no soy ingredients, and has no reported lead content, making it safe for your specific profile."
+        },
+        "tokens": {
+          "prompt": 3314,
+          "cached": 0,
+          "candidates": 920,
+          "thoughts": 1202,
+          "total": 5436,
+          "search_requests": 4,
+          "cost_usd": 0.148024
+        },
+        "token_breakdown": {
+          "extraction_total": 1745,
+          "deep_analysis_total": 3691,
+          "compatibility_total": 0
+        }
+      },
+      {
+        "timestamp": "2026-03-01T00:46:38.559Z",
+        "product_id": "08faf1a1-ebf4-4678-9bfd-65d28362a708",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "VERY HIGH",
+          "reason": "The product ingredients are fully compatible with your eggetarian dietary preferences and do not contain soy, which you are allergic to. You have no other listed sensitivities or health conditions that would conflict with these ingredients."
+        },
+        "tokens": {
+          "prompt": 553,
+          "cached": 0,
+          "candidates": 94,
+          "thoughts": 436,
+          "total": 1083,
+          "search_requests": 0,
+          "cost_usd": 0.000401
+        },
+        "token_breakdown": {
+          "extraction_total": 550,
+          "deep_analysis_total": 0,
+          "compatibility_total": 533
+        }
+      },
+      {
+        "timestamp": "2026-03-01T00:50:34.567Z",
+        "product_id": "d895a017-33e2-404a-b9a8-cf72594a5b4c",
+        "cache_hit": false,
+        "compatibility": {
+          "compatibility_level": "VERY HIGH",
+          "reason": "The product is dairy-based (suitable for eggetarians), contains no soy ingredients, and has no high-risk sources of lead (like cocoa or specific mineral supplements)."
+        },
+        "tokens": {
+          "prompt": 1990,
+          "cached": 0,
+          "candidates": 550,
+          "thoughts": 2197,
+          "total": 4737,
+          "search_requests": 2,
+          "cost_usd": 0.078387
+        },
+        "token_breakdown": {
+          "extraction_total": 662,
+          "deep_analysis_total": 4075,
+          "compatibility_total": 0
+        }
+      },
+      {
+        "timestamp": "2026-03-01T00:50:46.614Z",
+        "product_id": "df6cfaa8-1c7e-4ecb-a066-e37c766b03d8",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "VERY HIGH",
+          "reason": "All ingredients are compatible with your eggetarian diet, free from soy, and do not contain lead. You have no listed health conditions or skin sensitivities."
+        },
+        "tokens": {
+          "prompt": 503,
+          "cached": 0,
+          "candidates": 81,
+          "thoughts": 716,
+          "total": 1300,
+          "search_requests": 0,
+          "cost_usd": 0.000554
+        },
+        "token_breakdown": {
+          "extraction_total": 617,
+          "deep_analysis_total": 0,
+          "compatibility_total": 683
+        }
+      },
+      {
+        "timestamp": "2026-03-01T00:51:59.111Z",
+        "product_id": "36824574-3a21-4471-9ff8-36270b9d8d26",
+        "cache_hit": true,
+        "compatibility": {
+          "compatibility_level": "VERY HIGH",
+          "reason": "All ingredients are compatible with an eggetarian diet, and there are no listed soy allergens or lead sensitivities."
+        },
+        "tokens": {
+          "prompt": 587,
+          "cached": 0,
+          "candidates": 79,
+          "thoughts": 634,
+          "total": 1300,
+          "search_requests": 0,
+          "cost_usd": 0.000515
+        },
+        "token_breakdown": {
+          "extraction_total": 633,
+          "deep_analysis_total": 0,
+          "compatibility_total": 667
+        }
       }
     ]
   }
